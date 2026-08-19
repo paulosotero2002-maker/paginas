@@ -57,7 +57,6 @@
   .legend span{display:inline-flex;align-items:center;gap:5px;}
   .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
 
-  /* Kanban (mantido) */
   .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
   .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
     padding:10px;max-height:70vh;display:flex;flex-direction:column;}
@@ -77,7 +76,6 @@
     border-radius:6px;padding:5px 6px;font-family:'Inter',sans-serif;font-size:11.5px;}
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
-  /* Novo estilo para blocos de viatura */
   .vehicle-list{display:flex;flex-direction:column;gap:14px;}
   .vehicle-block{background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
   .vehicle-header{background:var(--surface);padding:10px 16px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;
@@ -154,7 +152,7 @@
 
 <script>
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMJ-eRh0ygX0UbtB4cb7rUQs0D1qaZs-AVlVBZHUtPHUH3DqXQIq5iuj9W_1Ij5KZFNw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby6p3WDWnnkQt2aEJizAzZcNdXtixWhwKx3-PcGRc19klPIviMNRd8yhhvPTZ6E-xEXEg/exec';
 
 const STAGES = [
   {key:'pendente',  label:'Pendente',   color:'var(--pendente)'},
@@ -201,10 +199,21 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   const combined = r + ' ' + n;
   let orcamentos = 0;
 
-  const qntNum = parseInt(qntRaw, 10);
-  if (o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || /or/i.test(o))) {
-    orcamentos = qntNum > 0 ? qntNum : 1;
-  } else {
+  // Prioridade 1: usa a coluna QNT diretamente, se houver número
+  if (qntRaw && String(qntRaw).trim() !== '') {
+    const parsed = parseInt(qntRaw, 10);
+    if (!isNaN(parsed) && parsed > 0) {
+      orcamentos = Math.min(parsed, 5);
+    }
+  }
+
+  // Prioridade 2: se não achou número, mas "orçada" indica sim
+  if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y' || /or/i.test(o))) {
+    orcamentos = 1;
+  }
+
+  // Prioridade 3: tenta detectar padrões no texto do status/nota
+  if (orcamentos === 0) {
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
     if (match) {
       orcamentos = parseInt(match[1], 10);
@@ -212,6 +221,7 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
       orcamentos = 1;
     }
   }
+
   if (orcamentos > 5) orcamentos = 5;
 
   const tabela = combined.includes('tabela');
@@ -339,7 +349,7 @@ async function updateSheet(osNumber, newStatus) {
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
     });
-    return true; // Se não deu erro de rede, considere sucesso (modo no-cors não disponível para leitura)
+    return true;
   } catch (err) {
     console.error('Erro ao atualizar a planilha:', err);
     return false;
@@ -488,7 +498,6 @@ function pillFor(rec){
   return `<span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}${extra} · OS ${escapeHtml(rec.os)}</span>`;
 }
 
-// NOVA FUNÇÃO renderGeral: blocos por viatura
 function renderGeral(){
   const q = document.getElementById('search').value.trim();
   const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)))
