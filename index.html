@@ -148,6 +148,7 @@ const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ
 // ==============================================
 // URL DO APPS SCRIPT PARA ATUALIZAR A PLANILHA
 // ==============================================
+// ⚠️ TROQUE PELA URL GERADA NA IMPLANTAÇÃO DO SEU APPS SCRIPT
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMJ-eRh0ygX0UbtB4cb7rUQs0D1qaZs-AVlVBZHUtPHUH3DqXQIq5iuj9W_1Ij5KZFNw/exec';
 
 // ==============================================
@@ -325,13 +326,13 @@ async function loadData(){
 
 async function updateSheet(osNumber, newStatus) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    console.warn('URL do Apps Script não configurada. Atualização local apenas.');
+    console.warn('URL do Apps Script não configurada.');
     return false;
   }
   try {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },  // ← CORRIGIDO
       body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -346,13 +347,13 @@ async function updateSheet(osNumber, newStatus) {
 
 async function createOSInSheet(data) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    console.warn('URL do Apps Script não configurada. Atualização local apenas.');
+    console.warn('URL do Apps Script não configurada.');
     return false;
   }
   try {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },  // ← CORRIGIDO
       body: JSON.stringify({ action: 'criarOS', ...data })
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
