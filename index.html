@@ -6,7 +6,6 @@
 <title>DEMAN — Prontidão 7 de Setembro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- PapaParse para leitura robusta de CSV -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root{
@@ -25,7 +24,7 @@
   header{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
     padding:20px 22px;background:linear-gradient(135deg,var(--bg-elev),var(--surface));
     border:1px solid var(--border);border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden;}
-  header::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);} 
+  header::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);}
   .htitle{display:flex;flex-direction:column;gap:2px;}
   .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;}
   h1{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;}
@@ -40,18 +39,18 @@
   .stat .l{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
 
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
-  .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;overflow:auto;}
+  .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;overflow-x:auto;flex-wrap:nowrap;}
   .tab{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14.5px;letter-spacing:.02em;padding:8px 16px;
     border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;white-space:nowrap;}
-  .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);} 
+  .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   input[type=text], input[type=file]{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
     padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;min-width:180px;}
-  input[type=text]:focus{outline:1px solid var(--amber);} 
+  input[type=text]:focus{outline:1px solid var(--amber);}
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
-    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);} 
-  .btn:hover{border-color:var(--amber);} 
-  .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);} 
+    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);}
+  .btn:hover{border-color:var(--amber);}
+  .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
   .btn.ghost{background:transparent;}
 
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
@@ -62,7 +61,7 @@
   .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
     padding:10px;max-height:70vh;display:flex;flex-direction:column;}
   .col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px;border-bottom:2px solid var(--stage-color,var(--border));margin-bottom:8px;}
-  .col-head .t{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.02em;color:var(--stage-color);} 
+  .col-head .t{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.02em;color:var(--stage-color);}
   .col-head .c{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);background:var(--surface);
     border-radius:20px;padding:1px 8px;}
   .col-cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;}
@@ -76,24 +75,24 @@
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
   .vg-row{display:grid;gap:10px;align-items:center;background:var(--surface);
-    border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:7px;}
-  .vg-row.both-ok{border-color:var(--concluida);background:linear-gradient(90deg,rgba(16,185,129,.08),transparent);} 
+    border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:7px;overflow-x:auto;}
+  .vg-row.both-ok{border-color:var(--concluida);background:linear-gradient(90deg,rgba(16,185,129,.08),transparent);}
   .vg-v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15.5px;}
   .vg-cell{display:flex;flex-direction:column;gap:3px;}
-  .vg-cell .p-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);} 
+  .vg-cell .p-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
   .pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
-    padding:3px 9px;border-radius:20px;width:fit-content;background:var(--surface-2);border:1px solid var(--border);} 
-  .pill .dot{width:7px;height:7px;} 
+    padding:3px 9px;border-radius:20px;width:fit-content;background:var(--surface-2);border:1px solid var(--border);}
+  .pill .dot{width:7px;height:7px;}
   .vg-head{display:grid;gap:10px;padding:0 12px 6px;font-size:11px;
     text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
 
   .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
     border-radius:10px;padding:12px;margin-bottom:14px;}
-  .addform.open{display:flex;} 
+  .addform.open{display:flex;}
   .addform input,.addform select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
     border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;}
-  footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;} 
-  .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;} 
+  footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
+  .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
   .error-box p{margin:5px 0;}
 </style>
 </head>
@@ -126,10 +125,7 @@
   <div class="addform" id="addForm">
     <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
     <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
-    <select id="af-proc" aria-label="Processo">
-      <option value="lavagem">Lavagem</option>
-      <option value="plotagem">Plotagem</option>
-    </select>
+    <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria" style="min-width:140px;">
     <select id="af-stage" aria-label="Estágio"></select>
     <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:1;min-width:160px;">
     <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
@@ -140,7 +136,6 @@
 
   <footer>Dados carregados da planilha Google Sheets. Se a carga automática falhar, use o botão abaixo.</footer>
 
-  <!-- Área para mensagem de erro e upload manual -->
   <div id="errorArea" class="error-box" style="display:none;">
     <p><strong>Não foi possível carregar os dados automaticamente.</strong></p>
     <p>Você pode baixar o CSV da planilha e carregá-lo manualmente:</p>
@@ -149,12 +144,8 @@
 </div>
 
 <script>
-// ==============================================
-// CONFIGURAÇÃO DA PLANILHA GOOGLE SHEETS
-// ==============================================
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
 
-// ==============================================
 const STAGES = [
   {key:'pendente',  label:'Pendente',            color:'var(--pendente)'},
   {key:'orcada',    label:'Orçamento',           color:'var(--orcada)'},
@@ -166,11 +157,10 @@ const STAGES = [
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
-// Normaliza string: minúscula e sem acentos
 function normalizeStr(str){
   return String(str || '')
     .normalize('NFD')
-    .replace(/[00-\\u036f]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim();
 }
@@ -180,19 +170,15 @@ function slugify(str){
   return n.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'outras';
 }
 
-// Localiza um campo por palavras-chave (normalizadas)
 function findField(row, keywords){
   const keys = Object.keys(row || {});
   for (const k of keys) {
     const nk = normalizeStr(k);
-    if (keywords.some(kw => nk.includes(kw))) {
-      return row[k];
-    }
+    if (keywords.some(kw => nk.includes(kw))) return row[k];
   }
   return '';
 }
 
-// Converte o texto do status para o estágio correspondente
 function parseStage(raw){
   const r = normalizeStr(raw || '');
   if (!r) return 'pendente';
@@ -205,7 +191,19 @@ function parseStage(raw){
   return 'pendente';
 }
 
-// Uso do PapaParse para ler CSV robustamente
+let DATA = [];
+let activeTab = 'geral';
+
+function saveLocal(){
+  try { localStorage.setItem('deman_data_v1', JSON.stringify(DATA)); } catch(e){}
+}
+function loadLocal(){
+  try {
+    const d = JSON.parse(localStorage.getItem('deman_data_v1'));
+    if (Array.isArray(d) && d.length) DATA = d;
+  } catch(e){}
+}
+
 function processCsvText(csvText){
   const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
   if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
@@ -221,17 +219,10 @@ function mapRowsToData(rows){
     const categoriaLabel = (rawCategoria || '').toString().trim() || 'Outras';
     const catKey = slugify(categoriaLabel);
 
-    // For backward compatibility with older sheets
     const osField = findField(row, ['os', 'os n', 'os nº', 'numero os', 'numero']) || '';
     const viatura = findField(row, ['viatura', 'veiculo', 'viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
     const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
-
-    // process: keep a simple hint for legacy UI (lavagem/plotagem) if category mentions them
-    const cNorm = normalizeStr(categoriaLabel);
-    let process = 'outras';
-    if (cNorm.includes('plotagem')) process = 'plotagem';
-    else if (cNorm.includes('lavagem')) process = 'lavagem';
 
     return {
       id: 'sheet-' + i,
@@ -239,22 +230,10 @@ function mapRowsToData(rows){
       os: (osField || '').toString().trim(),
       category: categoriaLabel,
       catKey: catKey,
-      process: process,
       stage: parseStage(status),
       note: (note || '').toString().trim(),
     };
-  }).filter(r => r.v); // remove linhas sem viatura
-}
-
-let DATA = [];
-let activeTab = 'geral';
-
-// Persistência local simples
-function saveLocal(){
-  try { localStorage.setItem('deman_data_v1', JSON.stringify(DATA)); } catch(e){}
-}
-function loadLocal(){
-  try { const d = JSON.parse(localStorage.getItem('deman_data_v1')); if (Array.isArray(d) && d.length) { DATA = d; } } catch(e){}
+  }).filter(r => r.v);
 }
 
 async function fetchCsv(url){
@@ -266,17 +245,16 @@ async function fetchCsv(url){
 async function loadData(){
   const errorArea = document.getElementById('errorArea');
   loadLocal();
-  if (DATA.length) render(); // render local first if present
+  if (DATA.length) render();
 
   let proxyWorked = false;
   try {
-    // Tenta direto
     const csvText = await fetchCsv(DIRECT_SHEET_CSV_URL);
     processCsvText(csvText);
     errorArea.style.display = 'none';
     proxyWorked = true;
   } catch (e1) {
-    console.warn('Falha na URL direta, tentando proxy...', e1);
+    console.warn('Falha na URL direta, tentando proxies...', e1);
     const proxies = [
       'https://api.allorigins.win/raw?url=',
       'https://corsproxy.io/?',
@@ -295,7 +273,6 @@ async function loadData(){
     }
     if (!proxyWorked) {
       console.error('Falha ao carregar a planilha (direto e proxies).');
-      DATA = DATA || [];
       renderStats();
       errorArea.style.display = 'block';
     }
@@ -325,7 +302,7 @@ function escapeHtml(s){
 function renderLegend(){
   const el = document.getElementById('legend');
   el.innerHTML = STAGES.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`).join('') +
-    `<span><span class="dot" style="background:var(--semos)"></span>Sem OS aberta</span>`;
+    `<span><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
 }
 
 function getCategories(){
@@ -343,7 +320,6 @@ function renderTabs(){
       <button class="tab ${activeTab === cat.key ? 'active' : ''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>
     `).join('')}
   `;
-  // Rebind
   document.querySelectorAll('.tab').forEach(t => {
     t.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -376,7 +352,7 @@ function renderKanban(categoryKey){
   }).join('');
   document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
   document.querySelectorAll('.stage-select').forEach(sel=>{
-    sel.addEventListener('change',(e)=>{
+    sel.addEventListener('change', (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
       if(rec){ rec.stage = e.target.value; saveLocal(); render(); }
     });
@@ -407,8 +383,6 @@ function renderGeral(){
     return `<span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label} · OS ${escapeHtml(rec.os)}</span>`;
   };
 
-  const bothOk = (r) => r.lav && r.plo && ['aprovada','execucao','concluida'].includes(r.lav.stage) && ['aprovada','execucao','concluida'].includes(r.plo.stage);
-
   const rows = allVehicles.map(v=>{
     const cells = categories.map(c=>{
       const rec = bestRecord(v,c.key);
@@ -429,7 +403,11 @@ function renderStats(){
   const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
   const catStats = categories.map(c=>({n: DATA.filter(r=>r.catKey===c.key).length, l:`OS de ${c.label}`}));
   const done = DATA.filter(r=>['aprovada','execucao','concluida'].includes(r.stage)).length;
-  const stats = [ {n: total, l:'Viaturas com OS'}, ...catStats, {n: done, l:'OS concluídas/em execução'} ];
+  const stats = [
+    {n: total, l:'Viaturas com OS'},
+    ...catStats,
+    {n: done, l:'OS concluídas/em execução'}
+  ];
   document.getElementById('stats').innerHTML = stats.map(s=>`
     <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>
   `).join('');
@@ -445,8 +423,6 @@ function render(){
   else { activeTab = 'geral'; render(); }
 }
 
-// Event bindings & helpers
-// Debounce util
 function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), wait); }; }
 
 const searchInput = document.getElementById('search');
@@ -464,29 +440,25 @@ document.getElementById('af-cancel').addEventListener('click', ()=>{
 document.getElementById('af-save').addEventListener('click', ()=>{
   const v = document.getElementById('af-v').value.trim().toUpperCase();
   const os = document.getElementById('af-os').value.trim();
-  const process = document.getElementById('af-proc').value;
+  const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
+  const catKey = slugify(catLabel);
   const stage = document.getElementById('af-stage').value;
   const note = document.getElementById('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
 
-  // For new entries created via UI we'll assign category based on the selected process (legacy behaviour)
-  const categoryLabel = process === 'lavagem' ? 'Lavagem' : (process === 'plotagem' ? 'Plotagem' : 'Outras');
-  const catKey = slugify(categoryLabel);
-
   const duplicate = DATA.some(r => r.v.toUpperCase() === v && r.catKey === catKey);
   if(duplicate){
-    alert(`Já existe uma OS para a viatura ${v} na categoria ${categoryLabel}.`);
+    alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`);
     return;
   }
 
-  DATA.push({id:'r'+Date.now(), v, os, category:categoryLabel, catKey, process, stage, note});
+  DATA.push({id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, note});
   saveLocal();
-  document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-note').value='';
+  document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
 });
 
-// Upload manual de CSV
 document.getElementById('csvFileInput').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
