@@ -145,7 +145,12 @@
 <script>
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
 
-// Novos 4 status principais
+// ==============================================
+// URL DO APPS SCRIPT PARA ATUALIZAR A PLANILHA
+// ==============================================
+const APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
+
+// ==============================================
 const STAGES = [
   {key:'pendente',  label:'Pendente',   color:'var(--pendente)'},
   {key:'aprovada',  label:'Aprovada',   color:'var(--aprovada)'},
@@ -176,7 +181,6 @@ function findField(row, keywords){
   return '';
 }
 
-// Converte o texto do status para um dos 4 status principais
 function parseStage(raw){
   const r = normalizeStr(raw || '');
   if (r.includes('cancelada')) return 'cancelada';
@@ -185,7 +189,6 @@ function parseStage(raw){
   return 'pendente';
 }
 
-// Extrai detalhes quando está pendente: orçamentos, tabela, justificativa
 function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   const r = normalizeStr(statusRaw || '');
   const n = normalizeStr(note || '');
@@ -193,12 +196,10 @@ function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
   const combined = r + ' ' + n;
   let orcamentos = 0;
 
-  // Usa coluna "orçada" e "qnt" se disponíveis
   const qntNum = parseInt(qntRaw, 10);
   if (o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || /or/i.test(o))) {
     orcamentos = qntNum > 0 ? qntNum : 1;
   } else {
-    // Fallback: detecta padrões no status/nota
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
     if (match) {
       orcamentos = parseInt(match[1], 10);
@@ -258,8 +259,6 @@ function mapRowsToData(rows){
     const viatura = findField(row, ['viatura', 'veiculo', 'viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
     const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
-
-    // Novas colunas
     const orcadaRaw = findField(row, ['orçada', 'orcada']) || row['orçada'] || row['Orçada'] || '';
     const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd']) || row['qnt'] || '';
 
@@ -321,6 +320,27 @@ async function loadData(){
       renderStats();
       errorArea.style.display = 'block';
     }
+  }
+}
+
+async function updateSheet(osNumber, newStatus) {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
+    console.warn('URL do Apps Script não configurada. Atualização local apenas.');
+    return false;
+  }
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ os: osNumber, status: newStatus })
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+    if (!result.ok) throw new Error(result.error || 'Erro desconhecido');
+    return true;
+  } catch (err) {
+    console.error('Erro ao atualizar a planilha:', err);
+    return false;
   }
 }
 
@@ -397,7 +417,7 @@ function renderKanban(categoryKey){
         <div class="os">OS Nº ${escapeHtml(r.os)}</div>
         ${pendDetailsHtml(r)}
         ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
-        <select data-id="${r.id}" class="stage-select" aria-label="Alterar estágio">
+        <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select" aria-label="Alterar estágio">
           ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
         </select>
       </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
@@ -408,16 +428,23 @@ function renderKanban(categoryKey){
   }).join('');
   document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
   document.querySelectorAll('.stage-select').forEach(sel=>{
-    sel.addEventListener('change', (e)=>{
+    sel.addEventListener('change', async (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
-      if(rec){
-        rec.stage = e.target.value;
-        if (rec.stage !== 'pendente') {
-          rec.orcamentos = 0;
-          rec.tabela = false;
-          rec.justificativa = false;
-        }
-        saveLocal(); render();
+      if(!rec) return;
+      const oldStage = rec.stage;
+      const newStage = e.target.value;
+      rec.stage = newStage;
+      if (newStage !== 'pendente') {
+        rec.orcamentos = 0;
+        rec.tabela = false;
+        rec.justificativa = false;
+      }
+      saveLocal();
+      render();
+      // Enviar atualização para a planilha
+      const ok = await updateSheet(rec.os, newStage);
+      if (!ok) {
+        alert('O status foi alterado localmente, mas falhou ao atualizar a planilha. Verifique a URL do Apps Script.');
       }
     });
   });
@@ -515,7 +542,7 @@ document.getElementById('addBtn').addEventListener('click', ()=>{
 document.getElementById('af-cancel').addEventListener('click', ()=>{
   document.getElementById('addForm').classList.remove('open');
 });
-document.getElementById('af-save').addEventListener('click', ()=>{
+document.getElementById('af-save').addEventListener('click', async ()=>{
   const v = document.getElementById('af-v').value.trim().toUpperCase();
   const os = document.getElementById('af-os').value.trim();
   const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
@@ -541,6 +568,10 @@ document.getElementById('af-save').addEventListener('click', ()=>{
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
+
+  // Enviar para a planilha? A adição de nova OS não está prevista para atualizar a planilha,
+  // pois exigiria escrever em uma nova linha. Por enquanto, apenas atualizamos localmente.
+  // Se quiser, pode implementar no Apps Script uma função para adicionar linhas.
 });
 
 document.getElementById('csvFileInput').addEventListener('change', (e) => {
