@@ -25,7 +25,7 @@
   header{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
     padding:20px 22px;background:linear-gradient(135deg,var(--bg-elev),var(--surface));
     border:1px solid var(--border);border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden;}
-  header::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);}
+  header::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);} 
   .htitle{display:flex;flex-direction:column;gap:2px;}
   .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;}
   h1{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;}
@@ -40,18 +40,18 @@
   .stat .l{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
 
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
-  .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;}
+  .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px;overflow:auto;}
   .tab{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14.5px;letter-spacing:.02em;padding:8px 16px;
-    border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;}
-  .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
+    border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;white-space:nowrap;}
+  .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);} 
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   input[type=text], input[type=file]{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
     padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;min-width:180px;}
-  input[type=text]:focus{outline:1px solid var(--amber);}
+  input[type=text]:focus{outline:1px solid var(--amber);} 
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
-    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);}
-  .btn:hover{border-color:var(--amber);}
-  .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
+    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);} 
+  .btn:hover{border-color:var(--amber);} 
+  .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);} 
   .btn.ghost{background:transparent;}
 
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
@@ -62,7 +62,7 @@
   .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
     padding:10px;max-height:70vh;display:flex;flex-direction:column;}
   .col-head{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px;border-bottom:2px solid var(--stage-color,var(--border));margin-bottom:8px;}
-  .col-head .t{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.02em;color:var(--stage-color);}
+  .col-head .t{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.02em;color:var(--stage-color);} 
   .col-head .c{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);background:var(--surface);
     border-radius:20px;padding:1px 8px;}
   .col-cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;}
@@ -75,25 +75,25 @@
     border-radius:6px;padding:5px 6px;font-family:'Inter',sans-serif;font-size:11.5px;}
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
-  .vg-row{display:grid;grid-template-columns:110px 1fr 1fr;gap:10px;align-items:center;background:var(--surface);
+  .vg-row{display:grid;gap:10px;align-items:center;background:var(--surface);
     border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:7px;}
-  .vg-row.both-ok{border-color:var(--concluida);background:linear-gradient(90deg,rgba(16,185,129,.08),transparent);}
+  .vg-row.both-ok{border-color:var(--concluida);background:linear-gradient(90deg,rgba(16,185,129,.08),transparent);} 
   .vg-v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15.5px;}
   .vg-cell{display:flex;flex-direction:column;gap:3px;}
-  .vg-cell .p-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
+  .vg-cell .p-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);} 
   .pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
-    padding:3px 9px;border-radius:20px;width:fit-content;background:var(--surface-2);border:1px solid var(--border);}
-  .pill .dot{width:7px;height:7px;}
-  .vg-head{display:grid;grid-template-columns:110px 1fr 1fr;gap:10px;padding:0 12px 6px;font-size:11px;
+    padding:3px 9px;border-radius:20px;width:fit-content;background:var(--surface-2);border:1px solid var(--border);} 
+  .pill .dot{width:7px;height:7px;} 
+  .vg-head{display:grid;gap:10px;padding:0 12px 6px;font-size:11px;
     text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
 
   .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
     border-radius:10px;padding:12px;margin-bottom:14px;}
-  .addform.open{display:flex;}
+  .addform.open{display:flex;} 
   .addform input,.addform select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
     border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;}
-  footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
-  .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
+  footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;} 
+  .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;} 
   .error-box p{margin:5px 0;}
 </style>
 </head>
@@ -116,11 +116,7 @@
   <div class="legend" id="legend"></div>
 
   <div class="toolbar">
-    <div class="tabs">
-      <button class="tab active" data-tab="geral" aria-label="Visão geral">Visão Geral</button>
-      <button class="tab" data-tab="lavagem" aria-label="Lavagem">Lavagem</button>
-      <button class="tab" data-tab="plotagem" aria-label="Plotagem">Plotagem</button>
-    </div>
+    <div class="tabs" id="tabsContainer"></div>
     <div class="right-tools">
       <input type="text" id="search" placeholder="Buscar viatura (ex: AS-20)" aria-label="Buscar viatura">
       <button class="btn" id="addBtn" aria-label="Adicionar nova OS">+ Nova OS</button>
@@ -174,9 +170,14 @@ const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 function normalizeStr(str){
   return String(str || '')
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[00-\\u036f]/g, '')
     .toLowerCase()
     .trim();
+}
+
+function slugify(str){
+  const n = normalizeStr(str || '');
+  return n.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'outras';
 }
 
 // Localiza um campo por palavras-chave (normalizadas)
@@ -216,23 +217,31 @@ function processCsvText(csvText){
 
 function mapRowsToData(rows){
   return rows.map((row, i) => {
-    const categoria = normalizeStr(findField(row, ['categoria']) || '');
-    let process = 'lavagem';
-    if (categoria.includes('plotagem')) process = 'plotagem';
-    else if (categoria.includes('lavagem')) process = 'lavagem';
+    const rawCategoria = findField(row, ['categoria']) || row['Categoria'] || '';
+    const categoriaLabel = (rawCategoria || '').toString().trim() || 'Outras';
+    const catKey = slugify(categoriaLabel);
 
-    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os', 'numero']);
+    // For backward compatibility with older sheets
+    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os', 'numero']) || '';
     const viatura = findField(row, ['viatura', 'veiculo', 'viagem']) || row['Viatura'] || row['Veículo'] || '';
     const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
     const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
 
+    // process: keep a simple hint for legacy UI (lavagem/plotagem) if category mentions them
+    const cNorm = normalizeStr(categoriaLabel);
+    let process = 'outras';
+    if (cNorm.includes('plotagem')) process = 'plotagem';
+    else if (cNorm.includes('lavagem')) process = 'lavagem';
+
     return {
       id: 'sheet-' + i,
-      v: (viatura || '').trim(),
-      os: osField || '',
+      v: (viatura || '').toString().trim(),
+      os: (osField || '').toString().trim(),
+      category: categoriaLabel,
+      catKey: catKey,
       process: process,
       stage: parseStage(status),
-      note: note || '',
+      note: (note || '').toString().trim(),
     };
   }).filter(r => r.v); // remove linhas sem viatura
 }
@@ -291,9 +300,6 @@ async function loadData(){
       errorArea.style.display = 'block';
     }
   }
-  if (proxyWorked) {
-    // opcional: mostrar qual fonte funcionou
-  }
 }
 
 function daysUntilParade(){
@@ -322,71 +328,58 @@ function renderLegend(){
     `<span><span class="dot" style="background:var(--semos)"></span>Sem OS aberta</span>`;
 }
 
-function renderStats(){
-  const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
-  const doneLav = DATA.filter(r=>r.process==='lavagem' && ['aprovada','execucao','concluida'].includes(r.stage)).length;
-  const doneClo = DATA.filter(r=>r.process==='plotagem' && ['aprovada','execucao','concluida'].includes(r.stage)).length;
-  const pend = DATA.filter(r=>r.stage==='pendente').length;
-  const stats = [
-    {n: total, l:'Viaturas com OS'},
-    {n: DATA.filter(r=>r.process==='lavagem').length, l:'OS de lavagem abertas'},
-    {n: DATA.filter(r=>r.process==='plotagem').length, l:'OS de plotagem abertas'},
-    {n: doneLav, l:'Lavagens aprovadas ou concluídas'},
-    {n: doneClo, l:'Plotagens aprovadas ou concluídas'},
-    {n: pend, l:'OS ainda pendentes'},
-  ];
-  document.getElementById('stats').innerHTML = stats.map(s=>`
-    <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>
-  `).join('');
+function getCategories(){
+  const map = new Map();
+  DATA.forEach(r => { if(r.catKey && !map.has(r.catKey)) map.set(r.catKey, r.category); });
+  return Array.from(map.entries()).map(([key,label])=>({key,label}));
+}
+
+function renderTabs(){
+  const cats = getCategories();
+  const container = document.getElementById('tabsContainer');
+  container.innerHTML = `\n    <button class="tab ${activeTab === 'geral' ? 'active' : ''}" data-tab="geral" aria-label="Visão geral">Visão Geral</button>\n    ${cats.map(cat => `\n      <button class="tab ${activeTab === cat.key ? 'active' : ''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>\n    `).join('')}\n  `;
+  // Rebind
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      activeTab = t.dataset.tab;
+      render();
+    });
+  });
 }
 
 function matchesSearch(v, q){ return !q || (v && v.toLowerCase().includes(q.toLowerCase())); }
 
-function renderKanban(process){
+function renderKanban(categoryKey){
   const q = document.getElementById('search').value.trim();
   const cols = STAGES.map(st=>{
-    const items = DATA.filter(r=>r.process===process && r.stage===st.key && matchesSearch(r.v,q));
-    const cards = items.length ? items.map(r=>`
-      <div class="card" style="--stage-color:${st.color}">
-        <div class="v">${escapeHtml(r.v)}</div>
-        <div class="os">OS Nº ${escapeHtml(r.os)}</div>
-        ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
-        <select data-id="${r.id}" class="stage-select" aria-label="Alterar estágio">
-          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
-        </select>
-      </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
-    return `<div class="col" style="--stage-color:${st.color}">
-      <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>
-      <div class="col-cards">${cards}</div>
-    </div>`;
+    const items = DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
+    const cards = items.length ? items.map(r=>`\n      <div class="card" style="--stage-color:${st.color}">\n        <div class="v">${escapeHtml(r.v)}</div>\n        <div class="os">OS Nº ${escapeHtml(r.os)}</div>\n        ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}\n        <select data-id="${r.id}" class="stage-select" aria-label="Alterar estágio">\n          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}\n        </select>\n      </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
+    return `<div class="col" style="--stage-color:${st.color}">\n      <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>\n      <div class="col-cards">${cards}</div>\n    </div>`;
   }).join('');
   document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
   document.querySelectorAll('.stage-select').forEach(sel=>{
-    sel.addEventListener('change', (e)=>{
+    sel.addEventListener('change',(e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
       if(rec){ rec.stage = e.target.value; saveLocal(); render(); }
     });
   });
 }
 
-function bestRecord(v, process){
-  const items = DATA.filter(r=>r.v===v && r.process===process);
+function bestRecord(v, categoryKey){
+  const items = DATA.filter(r=>r.v===v && r.catKey===categoryKey);
   if(!items.length) return null;
   return items.reduce((a,b)=> STAGE_IDX[b.stage] > STAGE_IDX[a.stage] ? b : a);
 }
 
 function renderGeral(){
+  const categories = getCategories();
   const q = document.getElementById('search').value.trim();
   const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean))).filter(v=>matchesSearch(v,q));
 
-  const rows = allVehicles.map(v=>{
-    const lav = bestRecord(v,'lavagem');
-    const plo = bestRecord(v,'plotagem');
-    const lavScore = lav ? STAGE_IDX[lav.stage] : -1;
-    const ploScore = plo ? STAGE_IDX[plo.stage] : -1;
-    const score = (lavScore === -1 && ploScore === -1) ? 999 : Math.min(lavScore === -1 ? 999 : lavScore, ploScore === -1 ? 999 : ploScore);
-    return {v, lav, plo, score};
-  }).sort((a,b)=>a.score-b.score);
+  const gridCols = `110px repeat(${categories.length || 1}, minmax(120px,1fr))`;
+  const header = `\n    <div class="vg-head" style="grid-template-columns:${gridCols}">\n      <span>Viatura</span>\n      ${categories.map(c=>`<span>${escapeHtml(c.label)}</span>`).join('')}\n    </div>`;
 
   const pillFor = (rec) => {
     if(!rec) return `<span class="pill"><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
@@ -396,38 +389,37 @@ function renderGeral(){
 
   const bothOk = (r) => r.lav && r.plo && ['aprovada','execucao','concluida'].includes(r.lav.stage) && ['aprovada','execucao','concluida'].includes(r.plo.stage);
 
-  const list = rows.map(r=>`
-    <div class="vg-row ${bothOk(r)?'both-ok':''}">
-      <div class="vg-v">${escapeHtml(r.v)}</div>
-      <div class="vg-cell"><span class="p-label">Lavagem</span>${pillFor(r.lav)}</div>
-      <div class="vg-cell"><span class="p-label">Plotagem</span>${pillFor(r.plo)}</div>
-    </div>`).join('');
+  const rows = allVehicles.map(v=>{
+    const cells = categories.map(c=>{
+      const rec = bestRecord(v,c.key);
+      return `<div class="vg-cell">${pillFor(rec)}</div>`;
+    }).join('');
+    return `<div class="vg-row" style="grid-template-columns:${gridCols}">\n      <div class="vg-v">${escapeHtml(v)}</div>\n      ${cells}\n    </div>`;
+  }).join('');
 
-  document.getElementById('content').innerHTML = `
-    <div class="vg-head"><span>Viatura</span><span>Lavagem</span><span>Plotagem</span></div>
-    ${list || '<div class="empty-col">Nenhuma viatura encontrada</div>'}
-    <div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;">
-      Ordenado do menos pronto para o mais pronto — foque no topo da lista primeiro.
-    </div>`;
+  document.getElementById('content').innerHTML = header + (rows || '<div class="empty-col">Nenhuma viatura encontrada</div>') + `\n    <div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;">Ordenado do menos pronto para o mais pronto — foque no topo da lista primeiro.</div>`;
+}
+
+function renderStats(){
+  const categories = getCategories();
+  const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
+  const catStats = categories.map(c=>({n: DATA.filter(r=>r.catKey===c.key).length, l:`OS de ${c.label}`}));
+  const done = DATA.filter(r=>['aprovada','execucao','concluida'].includes(r.stage)).length;
+  const stats = [ {n: total, l:'Viaturas com OS'}, ...catStats, {n: done, l:'OS concluídas/em execução'} ];
+  document.getElementById('stats').innerHTML = stats.map(s=>`\n    <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>\n  `).join('');
 }
 
 function render(){
   document.getElementById('countdownNum').textContent = daysUntilParade();
   renderLegend();
   renderStats();
+  renderTabs();
   if(activeTab==='geral') renderGeral();
-  else renderKanban(activeTab);
+  else if(getCategories().some(c=>c.key===activeTab)) renderKanban(activeTab);
+  else { activeTab = 'geral'; render(); }
 }
 
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click', ()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    activeTab = t.dataset.tab;
-    render();
-  });
-});
-
+// Event bindings & helpers
 // Debounce util
 function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), wait); }; }
 
@@ -436,6 +428,7 @@ searchInput.addEventListener('input', debounce(()=>render(),180));
 
 const afStageSel = document.getElementById('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+
 document.getElementById('addBtn').addEventListener('click', ()=>{
   document.getElementById('addForm').classList.toggle('open');
 });
@@ -450,13 +443,17 @@ document.getElementById('af-save').addEventListener('click', ()=>{
   const note = document.getElementById('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
 
-  const duplicate = DATA.some(r => r.v.toUpperCase() === v && r.process === process);
+  // For new entries created via UI we'll assign category based on the selected process (legacy behaviour)
+  const categoryLabel = process === 'lavagem' ? 'Lavagem' : (process === 'plotagem' ? 'Plotagem' : 'Outras');
+  const catKey = slugify(categoryLabel);
+
+  const duplicate = DATA.some(r => r.v.toUpperCase() === v && r.catKey === catKey);
   if(duplicate){
-    alert(`Já existe uma OS para a viatura ${v} no processo de ${process}.`);
+    alert(`Já existe uma OS para a viatura ${v} na categoria ${categoryLabel}.`);
     return;
   }
 
-  DATA.push({id:'r'+Date.now(), v, os, process, stage, note});
+  DATA.push({id:'r'+Date.now(), v, os, category:categoryLabel, catKey, process, stage, note});
   saveLocal();
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-note').value='';
   document.getElementById('addForm').classList.remove('open');
