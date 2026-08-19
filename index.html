@@ -337,7 +337,12 @@ function getCategories(){
 function renderTabs(){
   const cats = getCategories();
   const container = document.getElementById('tabsContainer');
-  container.innerHTML = `\n    <button class="tab ${activeTab === 'geral' ? 'active' : ''}" data-tab="geral" aria-label="Visão geral">Visão Geral</button>\n    ${cats.map(cat => `\n      <button class="tab ${activeTab === cat.key ? 'active' : ''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>\n    `).join('')}\n  `;
+  container.innerHTML = `
+    <button class="tab ${activeTab === 'geral' ? 'active' : ''}" data-tab="geral" aria-label="Visão geral">Visão Geral</button>
+    ${cats.map(cat => `
+      <button class="tab ${activeTab === cat.key ? 'active' : ''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>
+    `).join('')}
+  `;
   // Rebind
   document.querySelectorAll('.tab').forEach(t => {
     t.addEventListener('click', () => {
@@ -355,8 +360,19 @@ function renderKanban(categoryKey){
   const q = document.getElementById('search').value.trim();
   const cols = STAGES.map(st=>{
     const items = DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
-    const cards = items.length ? items.map(r=>`\n      <div class="card" style="--stage-color:${st.color}">\n        <div class="v">${escapeHtml(r.v)}</div>\n        <div class="os">OS Nº ${escapeHtml(r.os)}</div>\n        ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}\n        <select data-id="${r.id}" class="stage-select" aria-label="Alterar estágio">\n          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}\n        </select>\n      </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
-    return `<div class="col" style="--stage-color:${st.color}">\n      <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>\n      <div class="col-cards">${cards}</div>\n    </div>`;
+    const cards = items.length ? items.map(r=>`
+      <div class="card" style="--stage-color:${st.color}">
+        <div class="v">${escapeHtml(r.v)}</div>
+        <div class="os">OS Nº ${escapeHtml(r.os)}</div>
+        ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
+        <select data-id="${r.id}" class="stage-select" aria-label="Alterar estágio">
+          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
+        </select>
+      </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
+    return `<div class="col" style="--stage-color:${st.color}">
+      <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>
+      <div class="col-cards">${cards}</div>
+    </div>`;
   }).join('');
   document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
   document.querySelectorAll('.stage-select').forEach(sel=>{
@@ -379,7 +395,11 @@ function renderGeral(){
   const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean))).filter(v=>matchesSearch(v,q));
 
   const gridCols = `110px repeat(${categories.length || 1}, minmax(120px,1fr))`;
-  const header = `\n    <div class="vg-head" style="grid-template-columns:${gridCols}">\n      <span>Viatura</span>\n      ${categories.map(c=>`<span>${escapeHtml(c.label)}</span>`).join('')}\n    </div>`;
+  const header = `
+    <div class="vg-head" style="grid-template-columns:${gridCols}">
+      <span>Viatura</span>
+      ${categories.map(c=>`<span>${escapeHtml(c.label)}</span>`).join('')}
+    </div>`;
 
   const pillFor = (rec) => {
     if(!rec) return `<span class="pill"><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
@@ -394,10 +414,14 @@ function renderGeral(){
       const rec = bestRecord(v,c.key);
       return `<div class="vg-cell">${pillFor(rec)}</div>`;
     }).join('');
-    return `<div class="vg-row" style="grid-template-columns:${gridCols}">\n      <div class="vg-v">${escapeHtml(v)}</div>\n      ${cells}\n    </div>`;
+    return `<div class="vg-row" style="grid-template-columns:${gridCols}">
+      <div class="vg-v">${escapeHtml(v)}</div>
+      ${cells}
+    </div>`;
   }).join('');
 
-  document.getElementById('content').innerHTML = header + (rows || '<div class="empty-col">Nenhuma viatura encontrada</div>') + `\n    <div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;">Ordenado do menos pronto para o mais pronto — foque no topo da lista primeiro.</div>`;
+  document.getElementById('content').innerHTML = header + (rows || '<div class="empty-col">Nenhuma viatura encontrada</div>') + `
+    <div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;">Ordenado do menos pronto para o mais pronto — foque no topo da lista primeiro.</div>`;
 }
 
 function renderStats(){
@@ -406,7 +430,9 @@ function renderStats(){
   const catStats = categories.map(c=>({n: DATA.filter(r=>r.catKey===c.key).length, l:`OS de ${c.label}`}));
   const done = DATA.filter(r=>['aprovada','execucao','concluida'].includes(r.stage)).length;
   const stats = [ {n: total, l:'Viaturas com OS'}, ...catStats, {n: done, l:'OS concluídas/em execução'} ];
-  document.getElementById('stats').innerHTML = stats.map(s=>`\n    <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>\n  `).join('');
+  document.getElementById('stats').innerHTML = stats.map(s=>`
+    <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>
+  `).join('');
 }
 
 function render(){
