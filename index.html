@@ -6,6 +6,8 @@
 <title>DEMAN — Prontidão 7 de Setembro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- PapaParse para leitura robusta de CSV -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root{
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
@@ -191,7 +193,7 @@ function findField(row, keywords){
 
 // Converte o texto do status para o estágio correspondente
 function parseStage(raw){
-  const r = normalizeStr(raw);
+  const r = normalizeStr(raw || '');
   if (!r) return 'pendente';
   if (r.includes('vidrocar')) return 'execucao';
   if (r.includes('entregue')) return 'concluida';
@@ -202,50 +204,48 @@ function parseStage(raw){
   return 'pendente';
 }
 
-// Parser CSV simples (suficiente para o formato da planilha)
-function parseCsv(text){
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return [];
-  const headers = lines[0].split(',').map(h => h.trim());
-  const result = [];
-  for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',');
-    const obj = {};
-    headers.forEach((h, idx) => {
-      obj[h] = values[idx] ? values[idx].trim() : '';
-    });
-    result.push(obj);
-  }
-  return result;
+// Uso do PapaParse para ler CSV robustamente
+function processCsvText(csvText){
+  const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+  if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
+  const rows = parsed.data || [];
+  DATA = mapRowsToData(rows);
+  saveLocal();
+  render();
 }
 
 function mapRowsToData(rows){
   return rows.map((row, i) => {
-    const categoria = normalizeStr(row['Categoria'] || '');
+    const categoria = normalizeStr(findField(row, ['categoria']) || '');
     let process = 'lavagem';
     if (categoria.includes('plotagem')) process = 'plotagem';
     else if (categoria.includes('lavagem')) process = 'lavagem';
-    // Troca de óleo, pneus, outras -> lavagem
 
-    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os']);
+    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os', 'numero']);
+    const viatura = findField(row, ['viatura', 'veiculo', 'viagem']) || row['Viatura'] || row['Veículo'] || '';
+    const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
+    const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
+
     return {
       id: 'sheet-' + i,
-      v: row['Viatura'] || '',
-      os: osField,
+      v: (viatura || '').trim(),
+      os: osField || '',
       process: process,
-      stage: parseStage(row['Status']),
-      note: row['Observações'] || row['Observacoes'] || row['Oficina/Empresa'] || '',
+      stage: parseStage(status),
+      note: note || '',
     };
-  });
+  }).filter(r => r.v); // remove linhas sem viatura
 }
 
 let DATA = [];
 let activeTab = 'geral';
 
-function processCsvText(csvText){
-  const rows = parseCsv(csvText);
-  DATA = mapRowsToData(rows);
-  render();
+// Persistência local simples
+function saveLocal(){
+  try { localStorage.setItem('deman_data_v1', JSON.stringify(DATA)); } catch(e){}
+}
+function loadLocal(){
+  try { const d = JSON.parse(localStorage.getItem('deman_data_v1')); if (Array.isArray(d) && d.length) { DATA = d; } } catch(e){}
 }
 
 async function fetchCsv(url){
@@ -256,6 +256,9 @@ async function fetchCsv(url){
 
 async function loadData(){
   const errorArea = document.getElementById('errorArea');
+  loadLocal();
+  if (DATA.length) render(); // render local first if present
+
   let proxyWorked = false;
   try {
     // Tenta direto
@@ -265,22 +268,31 @@ async function loadData(){
     proxyWorked = true;
   } catch (e1) {
     console.warn('Falha na URL direta, tentando proxy...', e1);
-    try {
-      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(DIRECT_SHEET_CSV_URL);
-      const csvText = await fetchCsv(proxyUrl);
-      processCsvText(csvText);
-      errorArea.style.display = 'none';
-      proxyWorked = true;
-    } catch (e2) {
-      console.error('Falha ao carregar a planilha (direto e proxy).', e2);
-      DATA = [];
-      document.getElementById('content').innerHTML = '';
+    const proxies = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+      'https://api.codetabs.com/v1/proxy?quest='
+    ];
+    for (const p of proxies) {
+      try {
+        const csvText = await fetchCsv(p + encodeURIComponent(DIRECT_SHEET_CSV_URL));
+        processCsvText(csvText);
+        errorArea.style.display = 'none';
+        proxyWorked = true;
+        break;
+      } catch (e2) {
+        console.warn(`Proxy falhou (${p}):`, e2);
+      }
+    }
+    if (!proxyWorked) {
+      console.error('Falha ao carregar a planilha (direto e proxies).');
+      DATA = DATA || [];
       renderStats();
       errorArea.style.display = 'block';
     }
   }
   if (proxyWorked) {
-    // Opcional: registrar que carregou (pode adicionar log visual se desejar)
+    // opcional: mostrar qual fonte funcionou
   }
 }
 
@@ -311,7 +323,7 @@ function renderLegend(){
 }
 
 function renderStats(){
-  const total = new Set(DATA.map(r=>r.v)).size;
+  const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
   const doneLav = DATA.filter(r=>r.process==='lavagem' && ['aprovada','execucao','concluida'].includes(r.stage)).length;
   const doneClo = DATA.filter(r=>r.process==='plotagem' && ['aprovada','execucao','concluida'].includes(r.stage)).length;
   const pend = DATA.filter(r=>r.stage==='pendente').length;
@@ -328,7 +340,7 @@ function renderStats(){
   `).join('');
 }
 
-function matchesSearch(v, q){ return !q || v.toLowerCase().includes(q.toLowerCase()); }
+function matchesSearch(v, q){ return !q || (v && v.toLowerCase().includes(q.toLowerCase())); }
 
 function renderKanban(process){
   const q = document.getElementById('search').value.trim();
@@ -352,7 +364,7 @@ function renderKanban(process){
   document.querySelectorAll('.stage-select').forEach(sel=>{
     sel.addEventListener('change', (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
-      if(rec){ rec.stage = e.target.value; render(); }
+      if(rec){ rec.stage = e.target.value; saveLocal(); render(); }
     });
   });
 }
@@ -365,14 +377,15 @@ function bestRecord(v, process){
 
 function renderGeral(){
   const q = document.getElementById('search').value.trim();
-  const allVehicles = Array.from(new Set(DATA.map(r=>r.v))).filter(v=>matchesSearch(v,q));
+  const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean))).filter(v=>matchesSearch(v,q));
 
   const rows = allVehicles.map(v=>{
     const lav = bestRecord(v,'lavagem');
     const plo = bestRecord(v,'plotagem');
     const lavScore = lav ? STAGE_IDX[lav.stage] : -1;
     const ploScore = plo ? STAGE_IDX[plo.stage] : -1;
-    return {v, lav, plo, score: Math.min(lavScore, ploScore)};
+    const score = (lavScore === -1 && ploScore === -1) ? 999 : Math.min(lavScore === -1 ? 999 : lavScore, ploScore === -1 ? 999 : ploScore);
+    return {v, lav, plo, score};
   }).sort((a,b)=>a.score-b.score);
 
   const pillFor = (rec) => {
@@ -414,7 +427,12 @@ document.querySelectorAll('.tab').forEach(t=>{
     render();
   });
 });
-document.getElementById('search').addEventListener('input', render);
+
+// Debounce util
+function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), wait); }; }
+
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', debounce(()=>render(),180));
 
 const afStageSel = document.getElementById('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
@@ -439,6 +457,7 @@ document.getElementById('af-save').addEventListener('click', ()=>{
   }
 
   DATA.push({id:'r'+Date.now(), v, os, process, stage, note});
+  saveLocal();
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-note').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
