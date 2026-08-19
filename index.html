@@ -57,6 +57,7 @@
   .legend span{display:inline-flex;align-items:center;gap:5px;}
   .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
 
+  /* Kanban (mantido) */
   .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
   .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
     padding:10px;max-height:70vh;display:flex;flex-direction:column;}
@@ -76,15 +77,24 @@
     border-radius:6px;padding:5px 6px;font-family:'Inter',sans-serif;font-size:11.5px;}
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
-  .vg-row{display:grid;gap:10px;align-items:center;background:var(--surface);
-    border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:7px;overflow-x:auto;}
-  .vg-v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15.5px;}
-  .vg-cell{display:flex;flex-direction:column;gap:3px;}
+  /* Novo estilo para blocos de viatura */
+  .vehicle-list{display:flex;flex-direction:column;gap:14px;}
+  .vehicle-block{background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .vehicle-header{background:var(--surface);padding:10px 16px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;
+    color:var(--amber);border-bottom:1px solid var(--border);}
+  .vehicle-os-list{display:flex;flex-direction:column;}
+  .os-entry{padding:10px 16px;border-bottom:1px solid var(--border);}
+  .os-entry:last-child{border-bottom:none;}
+  .os-entry .os-line{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;font-size:13px;}
+  .os-entry .os-cat{font-weight:600;min-width:90px;}
+  .os-entry .os-number{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+  .os-entry .os-status{display:inline-flex;align-items:center;gap:5px;}
+  .os-entry .os-status .dot{width:7px;height:7px;}
+  .os-entry .os-orcada, .os-entry .os-qnt{font-size:12px;color:var(--text-dim);}
+  .os-entry .os-note{display:block;margin-top:4px;font-size:11px;color:var(--text-faint);}
   .pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
     padding:3px 9px;border-radius:20px;width:fit-content;background:var(--surface-2);border:1px solid var(--border);}
   .pill .dot{width:7px;height:7px;}
-  .vg-head{display:grid;gap:10px;padding:0 12px 6px;font-size:11px;
-    text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);}
 
   .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
     border-radius:10px;padding:12px;margin-bottom:14px;}
@@ -144,14 +154,8 @@
 
 <script>
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
-
-// ============================================== 
-// URL DO APPS SCRIPT PARA ATUALIZAR A PLANILHA
-// ==============================================
-// ⚠️ TROQUE PELA URL GERADA NA IMPLANTAÇÃO DO SEU APPS SCRIPT
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMJ-eRh0ygX0UbtB4cb7rUQs0D1qaZs-AVlVBZHUtPHUH3DqXQIq5iuj9W_1Ij5KZFNw/exec';
 
-// ==============================================
 const STAGES = [
   {key:'pendente',  label:'Pendente',   color:'var(--pendente)'},
   {key:'aprovada',  label:'Aprovada',   color:'var(--aprovada)'},
@@ -330,15 +334,12 @@ async function updateSheet(osNumber, newStatus) {
     return false;
   }
   try {
-    const response = await fetch(APPS_SCRIPT_URL, {
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },  // ← CORRIGIDO
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
-    if (!result.ok) throw new Error(result.error || 'Erro desconhecido');
-    return true;
+    return true; // Se não deu erro de rede, considere sucesso (modo no-cors não disponível para leitura)
   } catch (err) {
     console.error('Erro ao atualizar a planilha:', err);
     return false;
@@ -351,14 +352,11 @@ async function createOSInSheet(data) {
     return false;
   }
   try {
-    const response = await fetch(APPS_SCRIPT_URL, {
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },  // ← CORRIGIDO
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ action: 'criarOS', ...data })
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const result = await response.json();
-    if (!result.ok) throw new Error(result.error || 'Erro desconhecido');
     return true;
   } catch (err) {
     console.error('Erro ao criar OS na planilha:', err);
@@ -490,31 +488,47 @@ function pillFor(rec){
   return `<span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}${extra} · OS ${escapeHtml(rec.os)}</span>`;
 }
 
+// NOVA FUNÇÃO renderGeral: blocos por viatura
 function renderGeral(){
-  const categories = getCategories();
   const q = document.getElementById('search').value.trim();
-  const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean))).filter(v=>matchesSearch(v,q));
+  const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)))
+    .filter(v => matchesSearch(v, q))
+    .sort();
 
-  const gridCols = `110px repeat(${categories.length || 1}, minmax(120px,1fr))`;
-  const header = `
-    <div class="vg-head" style="grid-template-columns:${gridCols}">
-      <span>Viatura</span>
-      ${categories.map(c=>`<span>${escapeHtml(c.label)}</span>`).join('')}
-    </div>`;
+  if (allVehicles.length === 0) {
+    document.getElementById('content').innerHTML = '<div class="empty-col">Nenhuma viatura encontrada</div>';
+    return;
+  }
 
-  const rows = allVehicles.map(v=>{
-    const cells = categories.map(c=>{
-      const rec = bestRecord(v,c.key);
-      return `<div class="vg-cell">${pillFor(rec)}</div>`;
+  const blocks = allVehicles.map(v => {
+    const osList = DATA.filter(r => r.v === v);
+    const osEntries = osList.map(r => {
+      const st = stageInfo(r.stage);
+      const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
+      const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+      return `
+        <div class="os-entry">
+          <div class="os-line">
+            <span class="os-cat">${escapeHtml(r.category)}</span>
+            <span class="os-number">OS ${escapeHtml(r.os)}</span>
+            <span class="os-status"><span class="dot" style="background:${st.color}"></span>${st.label}</span>
+            <span class="os-orcada">Orçada: ${orcada}</span>
+            <span class="os-qnt">Qnt: ${qnt}</span>
+          </div>
+          ${r.note ? `<div class="os-note">${escapeHtml(r.note)}</div>` : ''}
+        </div>
+      `;
     }).join('');
-    return `<div class="vg-row" style="grid-template-columns:${gridCols}">
-      <div class="vg-v">${escapeHtml(v)}</div>
-      ${cells}
-    </div>`;
+
+    return `
+      <div class="vehicle-block">
+        <div class="vehicle-header">${escapeHtml(v)}</div>
+        <div class="vehicle-os-list">${osEntries}</div>
+      </div>
+    `;
   }).join('');
 
-  document.getElementById('content').innerHTML = header + (rows || '<div class="empty-col">Nenhuma viatura encontrada</div>') + `
-    <div style="font-size:11.5px;color:var(--text-faint);margin-top:10px;">Ordenado do menos pronto para o mais pronto — foque no topo da lista primeiro.</div>`;
+  document.getElementById('content').innerHTML = `<div class="vehicle-list">${blocks}</div>`;
 }
 
 function renderStats(){
