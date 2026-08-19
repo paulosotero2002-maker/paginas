@@ -143,6 +143,9 @@
 </div>
 
 <script>
+// ==============================================
+// CONFIGURAÇÃO DA PLANILHA GOOGLE SHEETS
+// ==============================================
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
 
 // ==============================================
@@ -332,7 +335,7 @@ async function updateSheet(osNumber, newStatus) {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ os: osNumber, status: newStatus })
+      body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const result = await response.json();
@@ -340,6 +343,27 @@ async function updateSheet(osNumber, newStatus) {
     return true;
   } catch (err) {
     console.error('Erro ao atualizar a planilha:', err);
+    return false;
+  }
+}
+
+async function createOSInSheet(data) {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
+    console.warn('URL do Apps Script não configurada. Atualização local apenas.');
+    return false;
+  }
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'criarOS', ...data })
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const result = await response.json();
+    if (!result.ok) throw new Error(result.error || 'Erro desconhecido');
+    return true;
+  } catch (err) {
+    console.error('Erro ao criar OS na planilha:', err);
     return false;
   }
 }
@@ -431,7 +455,6 @@ function renderKanban(categoryKey){
     sel.addEventListener('change', async (e)=>{
       const rec = DATA.find(r=>r.id===e.target.dataset.id);
       if(!rec) return;
-      const oldStage = rec.stage;
       const newStage = e.target.value;
       rec.stage = newStage;
       if (newStage !== 'pendente') {
@@ -441,7 +464,6 @@ function renderKanban(categoryKey){
       }
       saveLocal();
       render();
-      // Enviar atualização para a planilha
       const ok = await updateSheet(rec.os, newStage);
       if (!ok) {
         alert('O status foi alterado localmente, mas falhou ao atualizar a planilha. Verifique a URL do Apps Script.');
@@ -569,9 +591,20 @@ document.getElementById('af-save').addEventListener('click', async ()=>{
   document.getElementById('addForm').classList.remove('open');
   render();
 
-  // Enviar para a planilha? A adição de nova OS não está prevista para atualizar a planilha,
-  // pois exigiria escrever em uma nova linha. Por enquanto, apenas atualizamos localmente.
-  // Se quiser, pode implementar no Apps Script uma função para adicionar linhas.
+  const ok = await createOSInSheet({
+    categoria: catLabel,
+    viatura: v,
+    os: os,
+    status: stage,
+    orcada: '',
+    qnt: '',
+    oficina: '',
+    observacoes: note
+  });
+
+  if (!ok) {
+    alert('A OS foi adicionada localmente, mas falhou ao enviar para a planilha. Verifique a URL do Apps Script.');
+  }
 });
 
 document.getElementById('csvFileInput').addEventListener('change', (e) => {
