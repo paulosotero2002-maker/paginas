@@ -6,8 +6,6 @@
 <title>DEMAN — Prontidão 7 de Setembro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- PapaParse para leitura robusta de CSV -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root{
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
@@ -45,7 +43,7 @@
     border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;}
   .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  input[type=text]{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
+  input[type=text], input[type=file]{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
     padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;min-width:180px;}
   input[type=text]:focus{outline:1px solid var(--amber);}
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
@@ -93,6 +91,8 @@
   .addform input,.addform select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
     border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;}
   footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
+  .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
+  .error-box p{margin:5px 0;}
 </style>
 </head>
 <body>
@@ -115,32 +115,39 @@
 
   <div class="toolbar">
     <div class="tabs">
-      <button class="tab active" data-tab="geral">Visão Geral</button>
-      <button class="tab" data-tab="lavagem">Lavagem</button>
-      <button class="tab" data-tab="plotagem">Plotagem</button>
+      <button class="tab active" data-tab="geral" aria-label="Visão geral">Visão Geral</button>
+      <button class="tab" data-tab="lavagem" aria-label="Lavagem">Lavagem</button>
+      <button class="tab" data-tab="plotagem" aria-label="Plotagem">Plotagem</button>
     </div>
     <div class="right-tools">
-      <input type="text" id="search" placeholder="Buscar viatura (ex: AS-20)">
-      <button class="btn" id="addBtn">+ Nova OS</button>
+      <input type="text" id="search" placeholder="Buscar viatura (ex: AS-20)" aria-label="Buscar viatura">
+      <button class="btn" id="addBtn" aria-label="Adicionar nova OS">+ Nova OS</button>
     </div>
   </div>
 
   <div class="addform" id="addForm">
-    <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)">
-    <input type="text" id="af-os" placeholder="Nº da OS">
-    <select id="af-proc">
+    <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
+    <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
+    <select id="af-proc" aria-label="Processo">
       <option value="lavagem">Lavagem</option>
       <option value="plotagem">Plotagem</option>
     </select>
-    <select id="af-stage"></select>
-    <input type="text" id="af-note" placeholder="Observação (opcional)" style="flex:1;min-width:160px;">
-    <button class="btn primary" id="af-save">Salvar</button>
-    <button class="btn ghost" id="af-cancel">Cancelar</button>
+    <select id="af-stage" aria-label="Estágio"></select>
+    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:1;min-width:160px;">
+    <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
+    <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
 
   <div id="content"></div>
 
-  <footer>Dados carregados da planilha Google Sheets.</footer>
+  <footer>Dados carregados da planilha Google Sheets. Se a carga automática falhar, use o botão abaixo.</footer>
+
+  <!-- Área para mensagem de erro e upload manual -->
+  <div id="errorArea" class="error-box" style="display:none;">
+    <p><strong>Não foi possível carregar os dados automaticamente.</strong></p>
+    <p>Você pode baixar o CSV da planilha e carregá-lo manualmente:</p>
+    <input type="file" id="csvFileInput" accept=".csv" aria-label="Carregar CSV manualmente">
+  </div>
 </div>
 
 <script>
@@ -148,11 +155,6 @@
 // CONFIGURAÇÃO DA PLANILHA GOOGLE SHEETS
 // ==============================================
 const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
-const PROXY_URLS = [
-  'https://api.allorigins.win/raw?url=',
-  'https://corsproxy.io/?',
-  'https://api.codetabs.com/v1/proxy?quest='
-];
 
 // ==============================================
 const STAGES = [
@@ -166,6 +168,7 @@ const STAGES = [
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
+// Normaliza string: minúscula e sem acentos
 function normalizeStr(str){
   return String(str || '')
     .normalize('NFD')
@@ -174,15 +177,46 @@ function normalizeStr(str){
     .trim();
 }
 
+// Localiza um campo por palavras-chave (normalizadas)
+function findField(row, keywords){
+  const keys = Object.keys(row || {});
+  for (const k of keys) {
+    const nk = normalizeStr(k);
+    if (keywords.some(kw => nk.includes(kw))) {
+      return row[k];
+    }
+  }
+  return '';
+}
+
+// Converte o texto do status para o estágio correspondente
 function parseStage(raw){
   const r = normalizeStr(raw);
+  if (!r) return 'pendente';
   if (r.includes('vidrocar')) return 'execucao';
   if (r.includes('entregue')) return 'concluida';
-  if (r.includes('aprovada')) return 'aprovada';
-  if (r.includes('pode aprovar')) return 'pronta';
-  if (r.includes('cotada')) return 'cotada';
-  if (r.includes('orcada') || r.includes('orçada')) return 'orcada';
+  if (r.includes('aprovad')) return 'aprovada';
+  if (r.includes('pode aprovar') || r.includes('pronta')) return 'pronta';
+  if (r.includes('cotad')) return 'cotada';
+  if (r.includes('orcad')) return 'orcada';
   return 'pendente';
+}
+
+// Parser CSV simples (suficiente para o formato da planilha)
+function parseCsv(text){
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  const result = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',');
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = values[idx] ? values[idx].trim() : '';
+    });
+    result.push(obj);
+  }
+  return result;
 }
 
 function mapRowsToData(rows){
@@ -193,7 +227,7 @@ function mapRowsToData(rows){
     else if (categoria.includes('lavagem')) process = 'lavagem';
     // Troca de óleo, pneus, outras -> lavagem
 
-    const osField = row['OS Nº'] || row['OS NÂº'] || row['OS Nº'] || row['OS'] || '';
+    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os']);
     return {
       id: 'sheet-' + i,
       v: row['Viatura'] || '',
@@ -208,15 +242,10 @@ function mapRowsToData(rows){
 let DATA = [];
 let activeTab = 'geral';
 
-function processCsv(csvText){
-  const parsed = Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-  });
-  if (parsed.errors.length) {
-    console.warn('Avisos na leitura do CSV:', parsed.errors);
-  }
-  DATA = mapRowsToData(parsed.data);
+function processCsvText(csvText){
+  const rows = parseCsv(csvText);
+  DATA = mapRowsToData(rows);
+  render();
 }
 
 async function fetchCsv(url){
@@ -225,41 +254,33 @@ async function fetchCsv(url){
   return await response.text();
 }
 
-async function tryFetchWithProxies(){
-  // 1. Tenta direto
+async function loadData(){
+  const errorArea = document.getElementById('errorArea');
+  let proxyWorked = false;
   try {
-    return await fetchCsv(DIRECT_SHEET_CSV_URL);
-  } catch (e) {
-    console.warn('Falha na URL direta, tentando proxies...', e);
-  }
-  // 2. Tenta cada proxy
-  for (const proxy of PROXY_URLS) {
-    const url = proxy + encodeURIComponent(DIRECT_SHEET_CSV_URL);
+    // Tenta direto
+    const csvText = await fetchCsv(DIRECT_SHEET_CSV_URL);
+    processCsvText(csvText);
+    errorArea.style.display = 'none';
+    proxyWorked = true;
+  } catch (e1) {
+    console.warn('Falha na URL direta, tentando proxy...', e1);
     try {
-      return await fetchCsv(url);
-    } catch (e) {
-      console.warn(`Proxy falhou (${proxy}):`, e);
+      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(DIRECT_SHEET_CSV_URL);
+      const csvText = await fetchCsv(proxyUrl);
+      processCsvText(csvText);
+      errorArea.style.display = 'none';
+      proxyWorked = true;
+    } catch (e2) {
+      console.error('Falha ao carregar a planilha (direto e proxy).', e2);
+      DATA = [];
+      document.getElementById('content').innerHTML = '';
+      renderStats();
+      errorArea.style.display = 'block';
     }
   }
-  throw new Error('Todas as tentativas falharam');
-}
-
-async function loadData(){
-  const contentEl = document.getElementById('content');
-  try {
-    const csvText = await tryFetchWithProxies();
-    processCsv(csvText);
-    render();
-  } catch (e) {
-    console.error('Falha ao carregar a planilha:', e);
-    DATA = [];
-    contentEl.innerHTML = `
-      <div class="empty-col" style="padding:20px;text-align:center;">
-        <p>Não foi possível carregar os dados da planilha.</p>
-        <p>Verifique se a página está sendo servida por um servidor HTTP (não abra diretamente como arquivo).</p>
-        <p>Veja as instruções no console para mais detalhes.</p>
-      </div>`;
-    renderStats();
+  if (proxyWorked) {
+    // Opcional: registrar que carregou (pode adicionar log visual se desejar)
   }
 }
 
@@ -318,7 +339,7 @@ function renderKanban(process){
         <div class="v">${escapeHtml(r.v)}</div>
         <div class="os">OS Nº ${escapeHtml(r.os)}</div>
         ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
-        <select data-id="${r.id}" class="stage-select">
+        <select data-id="${r.id}" class="stage-select" aria-label="Alterar estágio">
           ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
         </select>
       </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
@@ -421,6 +442,19 @@ document.getElementById('af-save').addEventListener('click', ()=>{
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-note').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
+});
+
+// Upload manual de CSV
+document.getElementById('csvFileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const csvText = ev.target.result;
+    processCsvText(csvText);
+    document.getElementById('errorArea').style.display = 'none';
+  };
+  reader.readAsText(file);
 });
 
 loadData();
