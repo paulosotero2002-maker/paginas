@@ -220,10 +220,10 @@
   } catch(e){ console.warn('Sentry init failed', e); }
 })();
 
-const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output[...]
+const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
-const POLLING_INTERVAL = 180000; // 3 minutos
+const POLLING_INTERVAL = 80000; // 1:20 minutos
 
 const STAGES = [
   {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
