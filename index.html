@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DEMAN — Prontidão 7 de Setembro</title>
+<title>DEMAN — Status das OS-BAMEX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -11,14 +11,12 @@
   :root{
     --bg:#10141A; --bg-elev:#161C24; --surface:#1D2530; --surface-2:#252E3B;
     --border:#303A47; --text:#E7ECF2; --text-dim:#93A0B0; --text-faint:#5C6879;
-    --pendente:#5B6472; --aprovada:#34D399; --finalizada:#10B981; --cancelada:#EF5350;
+    --Pendente:#5B6472; --Aprovada:#fff500; --Finalizada:#00ff0a; --Cancelada:#EF5350;
     --semos:#EF5350;
     --amber:#E8A93A;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
-  .disp{font-family:'Rajdhani',sans-serif;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
   .wrap{max-width:1180px;margin:0 auto;padding:20px 18px 60px;}
 
   header{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
@@ -33,6 +31,13 @@
   .countdown .num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:34px;color:var(--amber);line-height:1;}
   .countdown .lbl{font-size:12px;color:var(--text-dim);line-height:1.2;}
 
+  .update-indicator{
+    font-size: 11px;
+    color: var(--text-faint);
+    text-align: right;
+    margin-bottom: 10px;
+  }
+
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
   .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
   .stat .n{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;}
@@ -44,18 +49,18 @@
     border-radius:7px;cursor:pointer;color:var(--text-dim);border:none;background:transparent;white-space:nowrap;}
   .tab.active{background:var(--surface-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--border);}
   .right-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  input[type=text], input[type=file]{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
-    padding:9px 12px;font-family:'Inter',sans-serif;font-size:13.5px;min-width:180px;}
-  input[type=text]:focus{outline:1px solid var(--amber);}
+  input[type=text], input[type=file], select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;
+    padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;}
+  input[type=text]:focus, select:focus{outline:1px solid var(--amber);}
   .btn{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:9px 14px;
-    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);}
+    border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);white-space:nowrap;}
   .btn:hover{border-color:var(--amber);}
   .btn.primary{background:var(--amber);color:#1a1204;border-color:var(--amber);}
   .btn.ghost{background:transparent;}
 
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text-dim);margin-bottom:16px;}
   .legend span{display:inline-flex;align-items:center;gap:5px;}
-  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;}
 
   .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
   .col{min-width:230px;flex:1 1 230px;background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;
@@ -66,39 +71,49 @@
     border-radius:20px;padding:1px 8px;}
   .col-cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px;}
   .card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--stage-color);
-    border-radius:9px;padding:9px 10px;}
+    border-radius:9px;padding:9px 10px;overflow:hidden;}
   .card .v{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;}
   .card .os{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:1px;}
-  .card .note{font-size:11px;color:var(--text-faint);margin-top:3px;}
+  .card .note{font-size:11px;color:var(--text-faint);margin-top:3px;overflow-wrap:break-word;max-width:100%;}
   .card .pend-details{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
-  .badge{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:2px 8px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);}
+  .badge{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 6px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;}
   .card select{margin-top:7px;width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:6px;padding:5px 6px;font-family:'Inter',sans-serif;font-size:11.5px;}
+    border-radius:6px;padding:4px 6px;font-family:'Inter',sans-serif;font-size:11px;}
   .empty-col{font-size:12px;color:var(--text-faint);padding:10px 6px;text-align:center;}
 
-  .vehicle-list{display:flex;flex-direction:column;gap:14px;}
-  .vehicle-block{background:var(--bg-elev);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-  .vehicle-header{background:var(--surface);padding:10px 16px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;
-    color:var(--amber);border-bottom:1px solid var(--border);}
-  .vehicle-os-list{display:flex;flex-direction:column;}
-  .os-entry{padding:10px 16px;border-bottom:1px solid var(--border);}
-  .os-entry:last-child{border-bottom:none;}
-  .os-entry .os-line{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;font-size:13px;}
-  .os-entry .os-cat{font-weight:600;min-width:90px;}
-  .os-entry .os-number{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
-  .os-entry .os-status{display:inline-flex;align-items:center;gap:5px;}
-  .os-entry .os-status .dot{width:7px;height:7px;}
-  .os-entry .os-orcada, .os-entry .os-qnt{font-size:12px;color:var(--text-dim);}
-  .os-entry .os-note{display:block;margin-top:4px;font-size:11px;color:var(--text-faint);}
-  .pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
-    padding:3px 9px;border-radius:20px;width:fit-content;background:var(--surface-2);border:1px solid var(--border);}
-  .pill .dot{width:7px;height:7px;}
+  .family{background:var(--bg-elev);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
+  .family > summary{list-style:none;cursor:pointer;padding:14px 18px;display:flex;align-items:center;
+    justify-content:space-between;background:var(--surface);gap:10px;}
+  .family > summary::-webkit-details-marker{display:none;}
+  .family > summary::after{content:'▾';color:var(--text-faint);transition:transform .15s;margin-left:auto;}
+  .family[open] > summary::after{transform:rotate(180deg);}
+  .fam-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:18px;letter-spacing:.03em;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .fam-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);background:var(--bg);
+    border:1px solid var(--border);border-radius:20px;padding:2px 10px;white-space:nowrap;}
+  .veh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:14px 18px 18px;}
+  .veh-card{background:var(--surface);border:2px solid transparent;border-radius:11px;padding:12px 13px;overflow:hidden;}
+  .veh-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .svc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:5px 0 5px 8px;border-top:1px solid var(--border);border-left:3px solid transparent;flex-wrap:wrap;}
+  .svc-row:first-of-type{border-top:none;}
+  .svc-label{font-size:11.5px;color:var(--text-dim);min-width:80px;}
+  .svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:1;min-width:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;
+    padding:2px 6px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);white-space:nowrap;max-width:100%;}
+  .pill .dot{width:7px;height:7px;flex:none;}
+  .os-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);}
+  select.stage-select{margin-top:2px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+    border-radius:6px;padding:2px 4px;font-family:'Inter',sans-serif;font-size:10px;max-width:140px;}
+  .os-meta{display:flex;gap:8px;font-size:10px;color:var(--text-faint);margin-top:2px;flex-wrap:wrap;}
+  .os-note{display:block;margin-top:2px;font-size:9.5px;color:var(--text-faint);text-align:right;max-width:100%;overflow-wrap:break-word;}
 
   .addform{display:none;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);
     border-radius:10px;padding:12px;margin-bottom:14px;}
   .addform.open{display:flex;}
   .addform input,.addform select{background:var(--surface-2);border:1px solid var(--border);color:var(--text);
-    border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;}
+    border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:13px;min-width:0;}
+  .addform input[type="text"]{flex:1 1 150px;}
+  .addform select{flex:0 1 auto;}
+  .addform .btn{flex:0 0 auto;}
   footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
   .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
   .error-box p{margin:5px 0;}
@@ -110,13 +125,15 @@
   <header>
     <div class="htitle">
       <div class="eyebrow">DEMAN · Controle de Viaturas</div>
-      <h1>Prontidão para o Desfile de 7 de Setembro</h1>
+      <h1>Status das OS-BAMEX</h1>
     </div>
     <div class="countdown">
       <span class="num" id="countdownNum">—</span>
       <span class="lbl">dias<br>restantes</span>
     </div>
   </header>
+
+  <div class="update-indicator" id="updateStatus">Aguardando primeira carga...</div>
 
   <div class="stats" id="stats"></div>
   <div class="legend" id="legend"></div>
@@ -132,9 +149,14 @@
   <div class="addform" id="addForm">
     <input type="text" id="af-v" placeholder="Viatura (ex: AS-31)" aria-label="Viatura">
     <input type="text" id="af-os" placeholder="Nº da OS" aria-label="Número da OS">
-    <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria" style="min-width:140px;">
+    <input type="text" id="af-cat" placeholder="Categoria (ex: Lavagem)" aria-label="Categoria">
     <select id="af-stage" aria-label="Estágio"></select>
-    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:1;min-width:160px;">
+    <select id="af-orcada" aria-label="Orçada">
+      <option value="Não">Não</option>
+      <option value="Sim">Sim</option>
+    </select>
+    <input type="text" id="af-qnt" placeholder="Qnt (opcional)" aria-label="Quantidade" style="max-width:80px;">
+    <input type="text" id="af-note" placeholder="Observação (opcional)" aria-label="Observação" style="flex:2;">
     <button class="btn primary" id="af-save" aria-label="Salvar">Salvar</button>
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
@@ -151,273 +173,285 @@
 </div>
 
 <script>
-const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgJLcOwlEwxFzXZvHTcO3HzHabatIpwYQi5kAbPKQERKUzjbCou_6So6I_hQwafxP8Z7M0yhLN5GY7/pub?output=csv';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMJ-eRh0ygX0UbtB4cb7rUQs0D1qaZs-AVlVBZHUtPHUH3DqXQIq5iuj9W_1Ij5KZFNw/exec';
+// ==============================================
+// CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
+// ==============================================
+const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
+const STORAGE_KEY = 'deman_data_v1';
+const POLLING_INTERVAL = 180000; // 3 minutos
 
 const STAGES = [
-  {key:'pendente',  label:'Pendente',   color:'var(--pendente)'},
-  {key:'aprovada',  label:'Aprovada',   color:'var(--aprovada)'},
-  {key:'finalizada',label:'Finalizada', color:'var(--finalizada)'},
-  {key:'cancelada', label:'Cancelada',  color:'var(--cancelada)'},
+  {key:'Pendente',  label:'Pendente',   color:'var(--Pendente)'},
+  {key:'Aprovada',  label:'Aprovada',   color:'var(--Aprovada)'},
+  {key:'Finalizada',label:'Finalizada', color:'var(--Finalizada)'},
+  {key:'Cancelada', label:'Cancelada',  color:'var(--Cancelada)'},
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s,i)=>[s.key,i]));
 
+function normalizeViatura(v){
+  return v.trim().toUpperCase().replace(/\s+/g,' ').replace(/\s*-\s*/g,'-').replace(/\s+(?=\d)/g,'-');
+}
 function normalizeStr(str){
-  return String(str || '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
+  return String(str||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 }
-
 function slugify(str){
-  const n = normalizeStr(str || '');
-  return n.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'outras';
+  const n = normalizeStr(str||'');
+  return n.replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'outras';
 }
-
 function findField(row, keywords){
-  const keys = Object.keys(row || {});
+  const keys = Object.keys(row||{});
   for (const k of keys) {
     const nk = normalizeStr(k);
     if (keywords.some(kw => nk.includes(kw))) return row[k];
   }
   return '';
 }
-
 function parseStage(raw){
-  const r = normalizeStr(raw || '');
-  if (r.includes('cancelada')) return 'cancelada';
-  if (r.includes('entregue') || r.includes('finalizada') || r.includes('concluida')) return 'finalizada';
-  if (r.includes('aprovada')) return 'aprovada';
-  return 'pendente';
+  const r = normalizeStr(raw||'');
+  if (r.includes('cancelada')) return 'Cancelada';
+  if (r.includes('entregue') || r.includes('finalizada') || r.includes('concluida')) return 'Finalizada';
+  if (r.includes('aprovada')) return 'Aprovada';
+  return 'Pendente';
 }
-
-function extractPendenteDetails(statusRaw, note, orcadaRaw, qntRaw){
-  const r = normalizeStr(statusRaw || '');
-  const n = normalizeStr(note || '');
-  const o = normalizeStr(orcadaRaw || '');
-  const combined = r + ' ' + n;
+function extractOrcamentos(statusRaw, note, orcadaRaw, qntRaw){
+  const r = normalizeStr(statusRaw||'');
+  const n = normalizeStr(note||'');
+  const o = normalizeStr(orcadaRaw||'');
+  const combined = r+' '+n;
   let orcamentos = 0;
 
-  // Prioridade 1: usa a coluna QNT diretamente, se houver número
   if (qntRaw && String(qntRaw).trim() !== '') {
-    const parsed = parseInt(qntRaw, 10);
-    if (!isNaN(parsed) && parsed > 0) {
-      orcamentos = Math.min(parsed, 5);
-    }
+    const parsed = parseInt(qntRaw,10);
+    if (!isNaN(parsed) && parsed > 0) orcamentos = Math.min(parsed,5);
   }
-
-  // Prioridade 2: se não achou número, mas "orçada" indica sim
-  if (orcamentos === 0 && o && (o === 'sim' || o === 'true' || o === '1' || o === 'x' || o === 'yes' || o === 's' || o === 'y' || /or/i.test(o))) {
+  if (orcamentos === 0 && o && (o==='sim'||o==='true'||o==='1'||o==='x'||o==='yes'||o==='s'||o==='y')) {
     orcamentos = 1;
   }
-
-  // Prioridade 3: tenta detectar padrões no texto do status/nota
   if (orcamentos === 0) {
     const match = combined.match(/(\d+)\s*\/\s*5/) || combined.match(/(\d+)\s*de\s*5/) || combined.match(/or[çc]ada\s+(\d+)/i);
-    if (match) {
-      orcamentos = parseInt(match[1], 10);
-    } else if (r.includes('orçada') || r.includes('orcada') || r.includes('cotada')) {
-      orcamentos = 1;
-    }
+    if (match) orcamentos = parseInt(match[1],10);
+    else if (r.includes('orçada')||r.includes('orcada')||r.includes('cotada')) orcamentos = 1;
   }
+  return Math.min(orcamentos,5);
+}
+function extractPendenteFlags(statusRaw, note){
+  const r = normalizeStr(statusRaw||'');
+  const n = normalizeStr(note||'');
+  const combined = r+' '+n;
+  return { tabela: combined.includes('tabela'), justificativa: combined.includes('justificativa') };
+}
+function matchesSearch(v, q) {
+  if (!q) return true;
+  return normalizeStr(v).includes(normalizeStr(q));
+}
 
-  if (orcamentos > 5) orcamentos = 5;
-
-  const tabela = combined.includes('tabela');
-  const justificativa = combined.includes('justificativa');
-
-  return { orcamentos, tabela, justificativa };
+// ==============================================
+// FUNÇÕES DE ARMAZENAMENTO LOCAL
+// ==============================================
+function saveLocalData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA)); } catch(e) { console.warn('Erro ao salvar local:', e); }
+}
+function loadLocalData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length) {
+        DATA = parsed;
+        return true;
+      }
+    }
+  } catch(e) { console.warn('Erro ao carregar local:', e); }
+  return false;
 }
 
 let DATA = [];
 let activeTab = 'geral';
+let isLoading = false;
 
-function saveLocal(){
-  try { localStorage.setItem('deman_data_v1', JSON.stringify(DATA)); } catch(e){}
-}
-function loadLocal(){
-  try {
-    const d = JSON.parse(localStorage.getItem('deman_data_v1'));
-    if (Array.isArray(d) && d.length) {
-      DATA = d.map(r => {
-        const oldStage = r.stage;
-        if (oldStage === 'aprovada') r.stage = 'aprovada';
-        else if (oldStage === 'concluida' || oldStage === 'execucao') r.stage = 'finalizada';
-        else if (oldStage === 'cancelada') r.stage = 'cancelada';
-        else r.stage = 'pendente';
-        if (!r.orcamentos) r.orcamentos = 0;
-        if (!r.tabela) r.tabela = false;
-        if (!r.justificativa) r.justificativa = false;
-        return r;
-      });
-    }
-  } catch(e){}
-}
+function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 
 function processCsvText(csvText){
-  const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+  const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
+  let headerIndex = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].toLowerCase().includes('viatura') && lines[i].toLowerCase().includes('os nº')) {
+      headerIndex = i;
+      break;
+    }
+  }
+  if (headerIndex === -1) {
+    console.error('Cabeçalho não encontrado no CSV');
+    DATA = [];
+    renderStats();
+    return;
+  }
+  const cleanCsv = lines.slice(headerIndex).join('\n');
+  const parsed = Papa.parse(cleanCsv, { header: true, skipEmptyLines: true });
   if (parsed.errors && parsed.errors.length) console.warn('CSV parse warnings:', parsed.errors);
   const rows = parsed.data || [];
   DATA = mapRowsToData(rows);
-  saveLocal();
+  saveLocalData();
   render();
 }
 
 function mapRowsToData(rows){
-  return rows.map((row, i) => {
-    const rawCategoria = findField(row, ['categoria']) || row['Categoria'] || '';
-    const categoriaLabel = (rawCategoria || '').toString().trim() || 'Outras';
+  return rows.map((row,i)=>{
+    const rawCategoria = findField(row,['categoria']) || row['Categoria'] || '';
+    const categoriaLabel = (rawCategoria||'').toString().trim() || 'Outras';
     const catKey = slugify(categoriaLabel);
-
-    const osField = findField(row, ['os', 'os n', 'os nº', 'numero os', 'numero']) || '';
-    const viatura = findField(row, ['viatura', 'veiculo', 'viagem']) || row['Viatura'] || row['Veículo'] || '';
-    const status = findField(row, ['status', 'situacao', 'situação']) || row['Status'] || '';
-    const note = findField(row, ['observa', 'oficina', 'empresa']) || row['Observações'] || row['Observacoes'] || '';
-    const orcadaRaw = findField(row, ['orçada', 'orcada']) || row['orçada'] || row['Orçada'] || '';
-    const qntRaw = findField(row, ['qnt', 'quantidade', 'qtd']) || row['qnt'] || '';
+    const osField = findField(row,['os','os n','os nº','numero os','numero']) || '';
+    const viatura = findField(row,['viatura','veiculo','viagem']) || row['Viatura'] || row['Veículo'] || '';
+    const status = findField(row,['status','situacao','situação']) || row['Status'] || '';
+    const note = findField(row,['observa', 'observ', 'obs', 'nota', 'comentario']) || row['Observações'] || row['Observacoes'] || '';
+    const empresa = findField(row,['oficina', 'empresa']) || row['Oficina/Empresa'] || '';
+    const orcadaRaw = findField(row,['orçada','orcada']) || row['orçada'] || row['Orçada'] || '';
+    const qntRaw = findField(row,['qnt','quantidade','qtd','quant']) || row['qnt'] || '';
 
     const stage = parseStage(status);
-    const details = (stage === 'pendente') ? extractPendenteDetails(status, note, orcadaRaw, qntRaw) : { orcamentos: 0, tabela: false, justificativa: false };
+    const orcamentos = extractOrcamentos(status, note, orcadaRaw, qntRaw);
+    const flags = (stage==='Pendente') ? extractPendenteFlags(status, note) : {tabela:false,justificativa:false};
 
     return {
-      id: 'sheet-' + i,
-      v: (viatura || '').toString().trim(),
-      os: (osField || '').toString().trim(),
-      category: categoriaLabel,
-      catKey: catKey,
-      stage: stage,
-      orcamentos: details.orcamentos,
-      tabela: details.tabela,
-      justificativa: details.justificativa,
-      note: (note || '').toString().trim(),
+      id:'sheet-'+i,
+      v:normalizeViatura(viatura),
+      os:(osField||'').toString().trim(),
+      category:categoriaLabel,
+      catKey:catKey,
+      stage:stage,
+      orcamentos:orcamentos,
+      tabela:flags.tabela,
+      justificativa:flags.justificativa,
+      empresa:(empresa||'').toString().trim(),
+      note:(note||'').toString().trim()
     };
-  }).filter(r => r.v);
+  }).filter(r=>r.v);
 }
 
-async function fetchCsv(url){
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return await response.text();
-}
-
+async function fetchCsv(url){ const response=await fetch(url); if(!response.ok) throw new Error(`HTTP ${response.status}`); return await response.text(); }
 async function loadData(){
+  if(isLoading) return;
+  isLoading = true;
   const errorArea = document.getElementById('errorArea');
-  loadLocal();
-  if (DATA.length) render();
+  let loadedFromSheet = false;
 
-  let proxyWorked = false;
+  const cacheBust = 'ts=' + Date.now();
+  const csvUrl = DIRECT_SHEET_CSV_URL + (DIRECT_SHEET_CSV_URL.includes('?') ? '&' : '?') + cacheBust;
+
   try {
-    const csvText = await fetchCsv(DIRECT_SHEET_CSV_URL);
+    const csvText = await fetchCsv(csvUrl);
     processCsvText(csvText);
-    errorArea.style.display = 'none';
-    proxyWorked = true;
-  } catch (e1) {
+    errorArea.style.display='none';
+    loadedFromSheet = true;
+    updateIndicator('Atualizado em ' + new Date().toLocaleTimeString());
+  } catch(e1) {
     console.warn('Falha na URL direta, tentando proxies...', e1);
-    const proxies = [
-      'https://api.allorigins.win/raw?url=',
-      'https://corsproxy.io/?',
-      'https://api.codetabs.com/v1/proxy?quest='
-    ];
+    const proxies = ['https://api.allorigins.win/raw?url=','https://corsproxy.io/?','https://api.codetabs.com/v1/proxy?quest='];
     for (const p of proxies) {
       try {
-        const csvText = await fetchCsv(p + encodeURIComponent(DIRECT_SHEET_CSV_URL));
+        const proxyUrl = p + encodeURIComponent(csvUrl);
+        const csvText = await fetchCsv(proxyUrl);
         processCsvText(csvText);
-        errorArea.style.display = 'none';
-        proxyWorked = true;
+        errorArea.style.display='none';
+        loadedFromSheet = true;
+        updateIndicator('Atualizado via proxy em ' + new Date().toLocaleTimeString());
         break;
-      } catch (e2) {
+      } catch(e2) {
         console.warn(`Proxy falhou (${p}):`, e2);
       }
     }
-    if (!proxyWorked) {
-      console.error('Falha ao carregar a planilha (direto e proxies).');
+  }
+
+  if(!loadedFromSheet) {
+    console.error('Falha ao carregar a planilha (direto e proxies).');
+    const loadedFromLocal = loadLocalData();
+    if(loadedFromLocal) {
+      errorArea.style.display='none';
+      updateIndicator('Usando dados locais (planilha indisponível)');
+      render();
+    } else {
+      DATA=[];
       renderStats();
-      errorArea.style.display = 'block';
+      errorArea.style.display='block';
+      updateIndicator('Falha ao carregar dados');
     }
   }
+  isLoading = false;
 }
 
-async function updateSheet(osNumber, newStatus) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    console.warn('URL do Apps Script não configurada.');
-    return false;
-  }
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'atualizarStatus', os: osNumber, status: newStatus })
+async function updateSheet(osNumber,newStatus,viatura){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return false;
+  try{
+    const response = await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'atualizarStatus',os:osNumber,status:newStatus,viatura:viatura})
     });
-    return true;
-  } catch (err) {
-    console.error('Erro ao atualizar a planilha:', err);
-    return false;
-  }
+    if(!response.ok) return false;
+    const result = await response.json().catch(()=>null);
+    if(result && result.ok === true){ saveLocalData(); return true; } else return false;
+  }catch(err){ console.error('Erro ao atualizar a planilha:',err); return false; }
 }
 
-async function createOSInSheet(data) {
-  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') {
-    console.warn('URL do Apps Script não configurada.');
-    return false;
-  }
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'criarOS', ...data })
+async function createOSInSheet(data){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return false;
+  try{
+    const response = await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'criarOS',...data})
     });
-    return true;
-  } catch (err) {
-    console.error('Erro ao criar OS na planilha:', err);
-    return false;
-  }
+    if(!response.ok) return false;
+    const result = await response.json().catch(()=>null);
+    if(result && result.ok === true){ saveLocalData(); return true; } else return false;
+  }catch(err){ console.error('Erro ao criar OS na planilha:',err); return false; }
 }
 
 function daysUntilParade(){
-  const today = new Date();
-  const startToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const parade = new Date(today.getFullYear(), 8, 7);
-  let target = parade;
-  if (target < startToday) {
-    target = new Date(today.getFullYear() + 1, 8, 7);
-  }
-  const diff = Math.ceil((target - startToday) / 86400000);
-  return diff;
+  const today=new Date();
+  const startToday=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const parade=new Date(today.getFullYear(),8,7);
+  let target=parade;
+  if(target<startToday) target=new Date(today.getFullYear()+1,8,7);
+  return Math.ceil((target-startToday)/86400000);
 }
-
 function stageInfo(key){ return STAGES.find(s=>s.key===key) || STAGES[0]; }
-
-function escapeHtml(s){
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
 function renderLegend(){
-  const el = document.getElementById('legend');
+  const el=document.getElementById('legend');
   el.innerHTML = STAGES.map(s=>`<span><span class="dot" style="background:${s.color}"></span>${s.label}</span>`).join('') +
     `<span><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
 }
 
-function getCategories(){
-  const map = new Map();
-  DATA.forEach(r => { if(r.catKey && !map.has(r.catKey)) map.set(r.catKey, r.category); });
-  return Array.from(map.entries()).map(([key,label])=>({key,label}));
+// ==============================================
+// GERAÇÃO DE ABAS AUTOMÁTICA A PARTIR DAS OBSERVAÇÕES
+// ==============================================
+function getEventos(){
+  const mapa = new Map(); // chave normalizada -> texto original
+  DATA.forEach(r => {
+    const original = (r.note || '').trim();
+    if (!original) return;
+    const chave = normalizeStr(original);
+    if (!mapa.has(chave)) {
+      mapa.set(chave, original);
+    }
+  });
+  // Retorna os textos originais, ordenados alfabeticamente
+  return Array.from(mapa.entries())
+    .map(([chave, original]) => original)
+    .sort((a, b) => a.localeCompare(b));
 }
 
 function renderTabs(){
-  const cats = getCategories();
-  const container = document.getElementById('tabsContainer');
-  container.innerHTML = `
-    <button class="tab ${activeTab === 'geral' ? 'active' : ''}" data-tab="geral" aria-label="Visão geral">Visão Geral</button>
-    ${cats.map(cat => `
-      <button class="tab ${activeTab === cat.key ? 'active' : ''}" data-tab="${cat.key}">${escapeHtml(cat.label)}</button>
-    `).join('')}
-  `;
-  document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  const eventos = getEventos();
+  const container=document.getElementById('tabsContainer');
+  container.innerHTML = `<button class="tab ${activeTab==='geral'?'active':''}" data-tab="geral">Visão Geral</button>` +
+    eventos.map(ev => `<button class="tab ${activeTab===ev?'active':''}" data-tab="${ev}">${escapeHtml(ev)}</button>`).join('');
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
       activeTab = t.dataset.tab;
       render();
@@ -425,82 +459,16 @@ function renderTabs(){
   });
 }
 
-function matchesSearch(v, q){ return !q || (v && v.toLowerCase().includes(q.toLowerCase())); }
-
-function pendDetailsHtml(r){
-  if (r.stage !== 'pendente') return '';
-  const badges = [];
-  if (r.orcamentos > 0) badges.push(`<span class="badge">Orçada (${r.orcamentos})</span>`);
-  if (r.tabela) badges.push(`<span class="badge">Tabela</span>`);
-  if (r.justificativa) badges.push(`<span class="badge">Justificativa</span>`);
-  if (badges.length === 0) badges.push(`<span class="badge">Sem detalhes</span>`);
-  return `<div class="pend-details">${badges.join('')}</div>`;
-}
-
-function renderKanban(categoryKey){
-  const q = document.getElementById('search').value.trim();
-  const cols = STAGES.map(st=>{
-    const items = DATA.filter(r=>r.catKey===categoryKey && r.stage===st.key && matchesSearch(r.v,q));
-    const cards = items.length ? items.map(r=>`
-      <div class="card" style="--stage-color:${st.color}">
-        <div class="v">${escapeHtml(r.v)}</div>
-        <div class="os">OS Nº ${escapeHtml(r.os)}</div>
-        ${pendDetailsHtml(r)}
-        ${r.note ? `<div class="note">${escapeHtml(r.note)}</div>` : ''}
-        <select data-id="${r.id}" data-os="${escapeHtml(r.os)}" class="stage-select" aria-label="Alterar estágio">
-          ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
-        </select>
-      </div>`).join('') : `<div class="empty-col">Nenhuma OS aqui</div>`;
-    return `<div class="col" style="--stage-color:${st.color}">
-      <div class="col-head"><span class="t">${st.label}</span><span class="c">${items.length}</span></div>
-      <div class="col-cards">${cards}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('content').innerHTML = `<div class="board">${cols}</div>`;
-  document.querySelectorAll('.stage-select').forEach(sel=>{
-    sel.addEventListener('change', async (e)=>{
-      const rec = DATA.find(r=>r.id===e.target.dataset.id);
-      if(!rec) return;
-      const newStage = e.target.value;
-      rec.stage = newStage;
-      if (newStage !== 'pendente') {
-        rec.orcamentos = 0;
-        rec.tabela = false;
-        rec.justificativa = false;
-      }
-      saveLocal();
-      render();
-      const ok = await updateSheet(rec.os, newStage);
-      if (!ok) {
-        alert('O status foi alterado localmente, mas falhou ao atualizar a planilha. Verifique a URL do Apps Script.');
-      }
-    });
-  });
-}
-
-function bestRecord(v, categoryKey){
-  const items = DATA.filter(r=>r.v===v && r.catKey===categoryKey);
-  if(!items.length) return null;
-  return items.reduce((a,b)=> STAGE_IDX[b.stage] > STAGE_IDX[a.stage] ? b : a);
-}
-
-function pillFor(rec){
-  if(!rec) return `<span class="pill"><span class="dot" style="background:var(--semos)"></span>Sem OS</span>`;
-  const st = stageInfo(rec.stage);
-  let extra = '';
-  if (rec.stage === 'pendente') {
-    const parts = [];
-    if (rec.orcamentos > 0) parts.push(`Orçada (${rec.orcamentos})`);
-    if (rec.tabela) parts.push('Tabela');
-    if (rec.justificativa) parts.push('Justificativa');
-    if (parts.length) extra = ' · ' + parts.join(', ');
+// ==============================================
+// RENDER DA VISÃO GERAL (COM FILTRO OPCIONAL DE EVENTO)
+// ==============================================
+function renderGeral(eventoFiltro){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  let dados = DATA;
+  if (eventoFiltro) {
+    dados = DATA.filter(r => normalizeStr(r.note).includes(normalizeStr(eventoFiltro)));
   }
-  return `<span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}${extra} · OS ${escapeHtml(rec.os)}</span>`;
-}
-
-function renderGeral(){
-  const q = document.getElementById('search').value.trim();
-  const allVehicles = Array.from(new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)))
+  const allVehicles = Array.from(new Set(dados.map(r => (r.v||'').trim()).filter(Boolean)))
     .filter(v => matchesSearch(v, q))
     .sort();
 
@@ -509,56 +477,87 @@ function renderGeral(){
     return;
   }
 
-  const blocks = allVehicles.map(v => {
-    const osList = DATA.filter(r => r.v === v);
-    const osEntries = osList.map(r => {
-      const st = stageInfo(r.stage);
-      const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
-      const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
-      return `
-        <div class="os-entry">
-          <div class="os-line">
-            <span class="os-cat">${escapeHtml(r.category)}</span>
-            <span class="os-number">OS ${escapeHtml(r.os)}</span>
-            <span class="os-status"><span class="dot" style="background:${st.color}"></span>${st.label}</span>
-            <span class="os-orcada">Orçada: ${orcada}</span>
-            <span class="os-qnt">Qnt: ${qnt}</span>
-          </div>
-          ${r.note ? `<div class="os-note">${escapeHtml(r.note)}</div>` : ''}
-        </div>
-      `;
-    }).join('');
+  const familyOf = (v) => v.split('-')[0].toUpperCase();
+  const families = {};
+  allVehicles.forEach(v => { const f = familyOf(v); (families[f] = families[f] || []).push(v); });
 
-    return `
-      <div class="vehicle-block">
-        <div class="vehicle-header">${escapeHtml(v)}</div>
-        <div class="vehicle-os-list">${osEntries}</div>
-      </div>
-    `;
+  const html = Object.keys(families).sort().map(fam => {
+    const vehicles = families[fam].sort((a,b) => a.localeCompare(b));
+    const cards = vehicles.map(v => {
+      const osList = dados.filter(r => r.v === v);
+      const statusColors = osList.map(r => stageInfo(r.stage).color);
+      const uniqueColors = [...new Set(statusColors)];
+      let borderStyle = 'var(--border)';
+      if (uniqueColors.length === 1) borderStyle = uniqueColors[0];
+      else if (uniqueColors.length > 1) {
+        const stops = uniqueColors.map((color, idx) => `${color} ${Math.round(idx/(uniqueColors.length-1)*100)}%`).join(', ');
+        borderStyle = `linear-gradient(135deg, ${stops})`;
+      }
+      const osEntries = osList.map(r => {
+        const st = stageInfo(r.stage);
+        const orcada = r.orcamentos > 0 ? 'Sim' : 'Não';
+        const qnt = r.orcamentos > 0 ? r.orcamentos : '—';
+        return `
+          <div class="svc-row" style="border-left-color:${st.color}">
+            <span class="svc-label">${escapeHtml(r.category)}</span>
+            <div class="svc-right">
+              <span class="pill"><span class="dot" style="background:${st.color}"></span>${st.label}</span>
+              <span class="os-num">OS ${escapeHtml(r.os)}</span>
+              <select class="stage-select" data-id="${r.id}" data-os="${escapeHtml(r.os)}">
+                ${STAGES.map(s=>`<option value="${s.key}" ${s.key===r.stage?'selected':''}>${s.label}</option>`).join('')}
+              </select>
+              <div class="os-meta">
+                <span>Orçada: ${orcada}</span>
+                <span>Qnt: ${qnt}</span>
+              </div>
+              ${r.empresa ? `<div class="os-note">${escapeHtml(r.empresa)}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+      return `<div class="veh-card" style="border: 2px solid transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, ${borderStyle} border-box;">
+        <div class="veh-name">${escapeHtml(v)}</div>
+        ${osEntries}
+      </div>`;
+    }).join('');
+    return `<details class="family" open>
+      <summary>
+        <span class="fam-name">${fam} <span class="fam-count">${vehicles.length} viatura${vehicles.length>1?'s':''}</span></span>
+        <span class="fam-count">${vehicles.length} viaturas</span>
+      </summary>
+      <div class="veh-grid">${cards}</div>
+    </details>`;
   }).join('');
 
-  document.getElementById('content').innerHTML = `<div class="vehicle-list">${blocks}</div>`;
+  document.getElementById('content').innerHTML = html;
+  document.querySelectorAll('.stage-select').forEach(sel=>{
+    sel.addEventListener('change', async (e)=>{
+      const rec = DATA.find(r=>r.id===e.target.dataset.id);
+      if(!rec) return;
+      const oldStage = rec.stage;
+      const newStage = e.target.value;
+      rec.stage = newStage;
+      render();
+      const ok = await updateSheet(rec.os, newStage, rec.v);
+      if(!ok){ rec.stage = oldStage; alert('O status não pôde ser atualizado na planilha. A alteração foi revertida.'); render(); }
+    });
+  });
 }
 
 function renderStats(){
-  const categories = getCategories();
-  const total = new Set(DATA.map(r=> (r.v||'').trim()).filter(Boolean)).size;
-  const catStats = categories.map(c=>({n: DATA.filter(r=>r.catKey===c.key).length, l:`OS de ${c.label}`}));
-  const pendentes = DATA.filter(r=>r.stage==='pendente').length;
-  const aprovadas = DATA.filter(r=>r.stage==='aprovada').length;
-  const finalizadas = DATA.filter(r=>r.stage==='finalizada').length;
-  const canceladas = DATA.filter(r=>r.stage==='cancelada').length;
+  const total = new Set(DATA.map(r => (r.v||'').trim()).filter(Boolean)).size;
+  const Pendentes = DATA.filter(r=>r.stage==='Pendente').length;
+  const Aprovadas = DATA.filter(r=>r.stage==='Aprovada').length;
+  const Finalizadas = DATA.filter(r=>r.stage==='Finalizada').length;
+  const Canceladas = DATA.filter(r=>r.stage==='Cancelada').length;
   const stats = [
     {n: total, l:'Viaturas com OS'},
-    {n: pendentes, l:'Pendentes'},
-    {n: aprovadas, l:'Aprovadas'},
-    {n: finalizadas, l:'Finalizadas'},
-    {n: canceladas, l:'Canceladas'},
-    ...catStats
+    {n: Pendentes, l:'Pendentes'},
+    {n: Aprovadas, l:'Aprovadas'},
+    {n: Finalizadas, l:'Finalizadas'},
+    {n: Canceladas, l:'Canceladas'}
   ];
-  document.getElementById('stats').innerHTML = stats.map(s=>`
-    <div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>
-  `).join('');
+  document.getElementById('stats').innerHTML = stats.map(s=>`<div class="stat"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
 }
 
 function render(){
@@ -566,12 +565,14 @@ function render(){
   renderLegend();
   renderStats();
   renderTabs();
-  if(activeTab==='geral') renderGeral();
-  else if(getCategories().some(c=>c.key===activeTab)) renderKanban(activeTab);
-  else { activeTab = 'geral'; render(); }
+  if (activeTab === 'geral') {
+    renderGeral(null);
+  } else {
+    renderGeral(activeTab);
+  }
 }
 
-function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), wait); }; }
+function debounce(fn, wait=180){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
 
 const searchInput = document.getElementById('search');
 searchInput.addEventListener('input', debounce(()=>render(),180));
@@ -579,68 +580,48 @@ searchInput.addEventListener('input', debounce(()=>render(),180));
 const afStageSel = document.getElementById('af-stage');
 afStageSel.innerHTML = STAGES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
 
-document.getElementById('addBtn').addEventListener('click', ()=>{
-  document.getElementById('addForm').classList.toggle('open');
-});
-document.getElementById('af-cancel').addEventListener('click', ()=>{
-  document.getElementById('addForm').classList.remove('open');
-});
+document.getElementById('addBtn').addEventListener('click', ()=>{ document.getElementById('addForm').classList.toggle('open'); });
+document.getElementById('af-cancel').addEventListener('click', ()=>{ document.getElementById('addForm').classList.remove('open'); });
 document.getElementById('af-save').addEventListener('click', async ()=>{
-  const v = document.getElementById('af-v').value.trim().toUpperCase();
+  const v = normalizeViatura(document.getElementById('af-v').value);
   const os = document.getElementById('af-os').value.trim();
   const catLabel = document.getElementById('af-cat').value.trim() || 'Outras';
   const catKey = slugify(catLabel);
   const stage = document.getElementById('af-stage').value;
+  const orcada = document.getElementById('af-orcada').value;
+  const qntRaw = document.getElementById('af-qnt').value.trim();
   const note = document.getElementById('af-note').value.trim();
   if(!v || !os){ alert('Preencha a viatura e o número da OS.'); return; }
-
-  const duplicate = DATA.some(r => r.v.toUpperCase() === v && r.catKey === catKey);
-  if(duplicate){
-    alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`);
-    return;
+  let orcamentos = 0;
+  if(orcada === 'Sim'){
+    orcamentos = parseInt(qntRaw,10);
+    if(isNaN(orcamentos) || orcamentos < 1) orcamentos = 1;
+    if(orcamentos > 5) orcamentos = 5;
   }
-
-  const newRecord = {id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, note};
-  if (stage === 'pendente') {
-    newRecord.orcamentos = 0;
-    newRecord.tabela = false;
-    newRecord.justificativa = false;
-  }
+  const duplicate = DATA.some(r => normalizeViatura(r.v) === v && r.catKey === catKey);
+  if(duplicate){ alert(`Já existe uma OS para a viatura ${v} na categoria ${catLabel}.`); return; }
+  const newRecord = { id:'r'+Date.now(), v, os, category:catLabel, catKey, stage, orcamentos, tabela:false, justificativa:false, note };
   DATA.push(newRecord);
-  saveLocal();
+  render();
+  const ok = await createOSInSheet({ categoria:catLabel, viatura:v, os:os, status:stage, orcada:orcada, qnt:orcamentos>0?String(orcamentos):'', oficina:'', observacoes:note });
+  if(!ok){ const idx = DATA.indexOf(newRecord); if(idx>-1) DATA.splice(idx,1); alert('A OS não pôde ser adicionada à planilha. Verifique a URL do Apps Script.'); }
   document.getElementById('af-v').value=''; document.getElementById('af-os').value=''; document.getElementById('af-cat').value=''; document.getElementById('af-note').value='';
+  document.getElementById('af-orcada').value='Não'; document.getElementById('af-qnt').value='';
   document.getElementById('addForm').classList.remove('open');
   render();
-
-  const ok = await createOSInSheet({
-    categoria: catLabel,
-    viatura: v,
-    os: os,
-    status: stage,
-    orcada: '',
-    qnt: '',
-    oficina: '',
-    observacoes: note
-  });
-
-  if (!ok) {
-    alert('A OS foi adicionada localmente, mas falhou ao enviar para a planilha. Verifique a URL do Apps Script.');
-  }
 });
 
-document.getElementById('csvFileInput').addEventListener('change', (e) => {
+document.getElementById('csvFileInput').addEventListener('change', (e)=>{
   const file = e.target.files[0];
-  if (!file) return;
+  if(!file) return;
   const reader = new FileReader();
-  reader.onload = (ev) => {
-    const csvText = ev.target.result;
-    processCsvText(csvText);
-    document.getElementById('errorArea').style.display = 'none';
-  };
+  reader.onload = (ev)=>{ const csvText = ev.target.result; processCsvText(csvText); document.getElementById('errorArea').style.display='none'; };
   reader.readAsText(file);
 });
 
+// Inicialização e polling
 loadData();
+setInterval(()=>{ if(document.activeElement && document.activeElement.tagName==='SELECT') return; loadData(); }, POLLING_INTERVAL);
 </script>
 </body>
 </html>
