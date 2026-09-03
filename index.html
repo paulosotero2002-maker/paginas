@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DEMAN — Status das OS-BAMEX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" as="style" onload="this.rel='stylesheet'">
+<noscript>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
   :root{
@@ -117,6 +120,21 @@
   footer{text-align:center;color:var(--text-faint);font-size:11px;margin-top:24px;}
   .error-box{padding:20px;text-align:center;background:var(--bg-elev);border:1px solid var(--border);border-radius:10px;margin:10px 0;}
   .error-box p{margin:5px 0;}
+
+  /* Skeletons / shimmer */
+  .skel { background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; border-radius:8px; }
+  .skel-text { height:12px; width:80%; margin:6px 0; border-radius:4px; }
+  .skel-rect { height:60px; width:100%; border-radius:8px; }
+  @keyframes shimmer { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+  .loading .family, .loading .veh-card { visibility:hidden; opacity:0.01; transform:translateY(6px); }
+  .skeleton-wrap { display:grid; gap:10px; padding:14px; }
+  .progress-indicator { height:4px; background:linear-gradient(90deg,var(--amber),rgba(255,255,255,0.04)); border-radius:2px; overflow:hidden; }
+  .progress-indeterminate { animation: progress-loop 1.6s linear infinite; background:linear-gradient(90deg, rgba(255,255,255,0.06), var(--amber), rgba(255,255,255,0.06)); background-size: 200% 100%; }
+  @keyframes progress-loop { 0%{background-position:200% 0}100%{background-position:-200% 0} }
+
+  /* Smooth transitions */
+  .family { transition: transform .18s ease, opacity .18s ease; }
+  .veh-card { transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease; }
 </style>
 </head>
 <body>
@@ -161,6 +179,14 @@
     <button class="btn ghost" id="af-cancel" aria-label="Cancelar">Cancelar</button>
   </div>
 
+  <!-- Skeleton placeholder; exibido enquanto os dados carregam -->
+  <div id="skeleton" class="skeleton-wrap" aria-hidden="true" style="display:none;">
+    <div class="skel skel-rect" style="height:120px"></div>
+    <div class="skel skel-text"></div>
+    <div class="skel skel-text" style="width:60%"></div>
+    <div class="progress-indicator" aria-hidden="true"><div class="progress-indeterminate" style="height:4px"></div></div>
+  </div>
+
   <div id="content"></div>
 
   <footer>Dados carregados da planilha Google Sheets. Se a carga automática falhar, use o botão abaixo.</footer>
@@ -176,7 +202,25 @@
 // ==============================================
 // CONFIGURAÇÃO DA PLANILHA E APP SCRIPT
 // ==============================================
-const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output=csv';
+// Sentry (opcional) — substitua REPLACE_WITH_SENTRY_DSN por secret SENTRY_DSN
+(function initSentry(){
+  try {
+    const SENTRY_DSN = 'REPLACE_WITH_SENTRY_DSN';
+    if(!SENTRY_DSN) return;
+    const s = document.createElement('script');
+    s.src = 'https://browser.sentry-cdn.com/7.5.0/bundle.min.js';
+    s.crossOrigin = 'anonymous';
+    s.onload = () => {
+      if (window.Sentry) {
+        Sentry.init({ dsn: SENTRY_DSN, tracesSampleRate: 0.05 });
+      }
+    };
+    document.head.appendChild(s);
+    window.addEventListener('unhandledrejection', e => { if(window.Sentry) Sentry.captureException(e.reason || e); });
+  } catch(e){ console.warn('Sentry init failed', e); }
+})();
+
+const DIRECT_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3LObOEgxM1X17aNQkaH3W5Ll5T87-ilwdJTev4answjodildll1TQcPPWqnziJPdk0OvNPf0JHsB8/pub?gid=1320680332&single=true&output[...]
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcpOZVQOFXeIFN6xzTMXxVqvhjZ3CREpHf7ZAmYEpj_UzM1g-ED88In8wn4Jm0cEx-g/exec';
 const STORAGE_KEY = 'deman_data_v1';
 const POLLING_INTERVAL = 180000; // 3 minutos
@@ -272,6 +316,10 @@ let isLoading = false;
 
 function updateIndicator(text){ const el=document.getElementById('updateStatus'); if(el) el.textContent=text; }
 
+// Skeleton helpers
+function showSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='block'; document.body.classList.add('loading'); }
+function hideSkeleton(){ const s=document.getElementById('skeleton'); if(s) s.style.display='none'; document.body.classList.remove('loading'); }
+
 function processCsvText(csvText){
   const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
   let headerIndex = -1;
@@ -333,6 +381,7 @@ async function fetchCsv(url){ const response=await fetch(url); if(!response.ok) 
 async function loadData(){
   if(isLoading) return;
   isLoading = true;
+  showSkeleton();
   const errorArea = document.getElementById('errorArea');
   let loadedFromSheet = false;
 
@@ -377,6 +426,7 @@ async function loadData(){
       updateIndicator('Falha ao carregar dados');
     }
   }
+  hideSkeleton();
   isLoading = false;
 }
 
