@@ -3127,19 +3127,32 @@ function renderPreventiva(){
   var qtdAtrasadas = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'vermelho'; }).length;
   var qtdProximas  = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'amarelo'; }).length;
   var qtdEmDia     = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'verde'; }).length;
+  var clsAtras = PREV_FILTRO_OLEO === 'vermelho' ? ' active-filter' : '';
+  var clsProx  = PREV_FILTRO_OLEO === 'amarelo'  ? ' active-filter' : '';
+  var clsDia   = PREV_FILTRO_OLEO === 'verde'    ? ' active-filter' : '';
   $('prevSummary').innerHTML =
-    '<div class="summary-card baixadas" style="cursor:default;">' +
+    '<div class="summary-card baixadas' + clsAtras + '" data-prev-filter="vermelho">' +
       '<div class="label">🔴 Óleo atrasado (km)</div>' +
       '<div class="value">' + qtdAtrasadas + '</div>' +
     '</div>' +
-    '<div class="summary-card manut-abertos" style="cursor:default;">' +
+    '<div class="summary-card manut-abertos' + clsProx + '" data-prev-filter="amarelo">' +
       '<div class="label">🟡 Próximas da troca</div>' +
       '<div class="value">' + qtdProximas + '</div>' +
     '</div>' +
-    '<div class="summary-card manut-fechados" style="cursor:default;">' +
+    '<div class="summary-card manut-fechados' + clsDia + '" data-prev-filter="verde">' +
       '<div class="label">🟢 Em dia</div>' +
       '<div class="value">' + qtdEmDia + '</div>' +
     '</div>';
+
+  document.querySelectorAll('#prevSummary .summary-card').forEach(function(card){
+    card.addEventListener('click', function(){
+      var f = card.dataset.prevFilter;
+      PREV_FILTRO_OLEO = (PREV_FILTRO_OLEO === f) ? '' : f;
+      var sel = $('prevFiltroOleo');
+      if(sel) sel.value = PREV_FILTRO_OLEO;
+      renderPreventiva();
+    });
+  });
 
   if(lista.length === 0){
     container.innerHTML = '<div class="prev-empty">Nenhuma viatura encontrada.</div>';
