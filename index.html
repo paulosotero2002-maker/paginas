@@ -3088,9 +3088,10 @@ function renderCardPreventiva(v){
     '</div>' +
     '<div class="prev-body">' +
       '<div class="prev-row"><span class="lbl">KM atual</span><span class="val">' + fmtKm(v.kmAtual) + '</span></div>' +
-            '<div class="prev-row"><span class="lbl">Pr\u00F3x. troca</span><span class="val' + (kmProxAtrasada ? ' atraso' : '') + '">' + fmtKm(v.kmProxima) + '</span></div>' +
+      '<div class="prev-row"><span class="lbl">Pr\u00F3x. troca</span><span class="val' + (kmProxAtrasada ? ' atraso' : '') + '">' + fmtKm(v.kmProxima) + '</span></div>' +
       (v.osTroca ? '<div class="prev-row"><span class="lbl">OS troca</span><span class="val">' + escapeHtml(v.osTroca) + '</span></div>' : '') +
       '<div class="prev-data">📅 ' + (dataProx || '—') + (dataVencida ? ' <span class="vencida">· vencida</span>' : '') + '</div>' +
+    '</div>' +
     '<div class="prev-faixa ' + cor + '">' + (faixaIcone || '') + escapeHtml(faixaLabel) + '</div>' +
   '</div>';
 }
@@ -3123,22 +3124,22 @@ function renderPreventiva(){
     return String(a.prefixo).localeCompare(String(b.prefixo));
   });
 
-    var qtdAtrasadas = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'vermelho'; }).length;
-    var qtdProximas  = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'amarelo'; }).length;
-    var qtdEmDia     = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'verde'; }).length;
-    $('prevSummary').innerHTML =
-      '<div class="summary-card baixadas" style="cursor:default;">' +
-        '<div class="label">🔴 Óleo atrasado (km)</div>' +
-        '<div class="value">' + qtdAtrasadas + '</div>' +
-      '</div>' +
-      '<div class="summary-card manut-abertos" style="cursor:default;">' +
-        '<div class="label">🟡 Próximas da troca</div>' +
-        '<div class="value">' + qtdProximas + '</div>' +
-      '</div>' +
-      '<div class="summary-card manut-fechados" style="cursor:default;">' +
-        '<div class="label">🟢 Em dia</div>' +
-        '<div class="value">' + qtdEmDia + '</div>' +
-      '</div>';
+  var qtdAtrasadas = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'vermelho'; }).length;
+  var qtdProximas  = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'amarelo'; }).length;
+  var qtdEmDia     = PREV_VIATURAS.filter(function(v){ return v.statusOleo === 'verde'; }).length;
+  $('prevSummary').innerHTML =
+    '<div class="summary-card baixadas" style="cursor:default;">' +
+      '<div class="label">🔴 Óleo atrasado (km)</div>' +
+      '<div class="value">' + qtdAtrasadas + '</div>' +
+    '</div>' +
+    '<div class="summary-card manut-abertos" style="cursor:default;">' +
+      '<div class="label">🟡 Próximas da troca</div>' +
+      '<div class="value">' + qtdProximas + '</div>' +
+    '</div>' +
+    '<div class="summary-card manut-fechados" style="cursor:default;">' +
+      '<div class="label">🟢 Em dia</div>' +
+      '<div class="value">' + qtdEmDia + '</div>' +
+    '</div>';
 
   if(lista.length === 0){
     container.innerHTML = '<div class="prev-empty">Nenhuma viatura encontrada.</div>';
