@@ -160,8 +160,8 @@ button{font:inherit;}
 input[type=text], input[type=password], input[type=file], select, textarea{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:16px;min-width:0;-webkit-appearance:none;touch-action:manipulation;}
 input[type=text]:focus, input[type=password]:focus, select:focus, textarea:focus{outline:1px solid var(--amber);}
 input[type=file]{font-size:13px;}
-input[type=datetime-local]{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:16px;width:100%;min-width:0;-webkit-appearance:none;touch-action:manipulation;}
-input[type=datetime-local]:focus{outline:1px solid var(--amber);}
+input[type=datetime-local], input[type=date]{background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:16px;width:100%;min-width:0;-webkit-appearance:none;touch-action:manipulation;}
+input[type=datetime-local]:focus, input[type=date]:focus{outline:1px solid var(--amber);}
 .pass-wrap{position:relative;display:block;width:100%;}
 .pass-wrap input{padding-right:44px !important;width:100%;}
 .pass-toggle{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:6px;color:var(--text-dim);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .15s ease, background .15s ease;}
@@ -531,6 +531,36 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 .prev-faixa.vazio{background:var(--surface-2);color:var(--text-faint);}
 .prev-empty{text-align:center;color:var(--text-faint);padding:40px 20px;font-size:14px;grid-column:1/-1;}
 
+/* ─── Atualizar Preventiva ─── */
+.prev-panel{display:none;}
+.prev-panel.active{display:block;animation:fadeSlide .18s ease;}
+.prev-form{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 24px;max-width:760px;}
+.prev-form h2{font-family:'Rajdhani',sans-serif;font-size:20px;color:var(--amber);margin:0 0 4px;letter-spacing:.02em;}
+.prev-form p.help{font-size:12px;color:var(--text-dim);margin:0 0 18px;}
+.prev-form-bloco{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px;background:var(--surface-2);}
+.prev-form-bloco h3{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin:0 0 12px;font-weight:600;}
+.prev-form-bloco.opcional{background:transparent;}
+.prev-form-bloco .campo{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.prev-form-bloco .campo:last-child{margin-bottom:0;}
+.prev-form-bloco label{font-size:11px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;text-transform:uppercase;}
+.prev-form-bloco input,
+.prev-form-bloco select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:16px;width:100%;-webkit-appearance:none;touch-action:manipulation;}
+.prev-form-bloco input:focus,
+.prev-form-bloco select:focus{outline:1px solid var(--amber);}
+.prev-form-bloco input::placeholder{color:var(--text-faint);}
+.prev-form-bloco .dica{font-size:11px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;}
+.prev-form-bloco .dica.positivo{color:var(--verde);}
+.prev-form-bloco .dica.negativo{color:var(--vermelho);}
+.prev-info-card{background:linear-gradient(135deg, rgba(232,169,58,.08), var(--surface-2));border:1px solid rgba(232,169,58,.35);border-radius:10px;padding:14px 16px;margin-top:14px;display:none;}
+.prev-info-card.show{display:block;}
+.prev-info-card .titulo{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--amber);display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;}
+.prev-info-card .titulo .placa{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:2px 8px;letter-spacing:.04em;}
+.prev-info-card .linha{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 0;}
+.prev-info-card .linha span{color:var(--text-dim);}
+.prev-info-card .linha b{color:var(--text);font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.prev-form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.prev-form-actions .btn{padding:10px 18px;font-size:14px;}
+
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 @media print{
   body{background:#fff;color:#000;}
@@ -606,7 +636,13 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <button class="sidebar-link" data-view="home"><span class="icon">🏠</span><span class="label">Início</span></button>
       <button class="sidebar-link" data-view="os" data-perm="ver_os"><span class="icon">📋</span><span class="label">OS-BAMEX</span></button>
       <button class="sidebar-link" data-view="viaturas" data-perm="ver_viaturas"><span class="icon">🚗</span><span class="label">Viaturas</span></button>
-      <button class="sidebar-link" data-view="preventiva" data-perm="ver_preventiva"><span class="icon">🔧</span><span class="label">Manutenção Preventiva</span></button>
+      <div class="sidebar-group" id="sidebarPrevGroup" data-perm="ver_preventiva">
+        <button class="sidebar-link expanded" data-view="preventiva" id="sidebarPrevParent"><span class="icon">🔧</span><span class="label">Manutenção Preventiva</span><span class="chevron">▾</span></button>
+        <div class="sidebar-submenu open" id="sidebarSubPrev">
+          <button class="sidebar-sublink active" data-prev-tab="painel"><span class="icon">📊</span><span class="label">Painel</span></button>
+          <button class="sidebar-sublink" data-prev-tab="atualizar" data-perm="prev_editar_km"><span class="icon">✎</span><span class="label">Atualizar</span></button>
+        </div>
+      </div>
       <div class="sidebar-group" id="sidebarMovGroup" data-perm="ver_manutencao">
         <button class="sidebar-link expanded" data-view="manutencao" id="sidebarMovParent"><span class="icon">🛠</span><span class="label">Movimentação</span><span class="chevron">▾</span></button>
         <div class="sidebar-submenu open" id="sidebarSubMov">
@@ -711,27 +747,91 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
     </section>
 
     <section class="view" id="view-preventiva">
-      <div class="update-indicator" id="prevUpdateStatus">Carregando dados…</div>
-      <div class="summary" id="prevSummary"></div>
-      <div class="toolbar">
-        <div class="right-tools">
-          <select id="prevFiltroSituacao" style="min-width:150px;">
-            <option value="">Estado</option>
-            <option value="OPERANTE">Operantes</option>
-            <option value="MANUTENCAO">Em manutenção</option>
-          </select>
-          <select id="prevFiltroOleo" style="min-width:150px;">
-            <option value="">Situação</option>
-            <option value="vermelho">🔴 Atrasadas</option>
-            <option value="amarelo">🟡 Próximas</option>
-            <option value="verde">🟢 Em dia</option>
-          </select>
-          <input type="text" id="prevSearch" placeholder="Buscar placa ou prefixo" autocapitalize="characters">
-          <button class="btn ghost" id="prevClearFilterBtn" style="display:none;">Limpar filtro</button>
+      <div class="prev-panel active" id="prevPanel-painel">
+        <div class="update-indicator" id="prevUpdateStatus">Carregando dados…</div>
+        <div class="summary" id="prevSummary"></div>
+        <div class="toolbar">
+          <div class="right-tools">
+            <select id="prevFiltroSituacao" style="min-width:150px;">
+              <option value="">Estado</option>
+              <option value="OPERANTE">Operantes</option>
+              <option value="MANUTENCAO">Em manutenção</option>
+            </select>
+            <select id="prevFiltroOleo" style="min-width:150px;">
+              <option value="">Situação</option>
+              <option value="vermelho">🔴 Atrasadas</option>
+              <option value="amarelo">🟡 Próximas</option>
+              <option value="verde">🟢 Em dia</option>
+            </select>
+            <input type="text" id="prevSearch" placeholder="Buscar placa ou prefixo" autocapitalize="characters">
+            <button class="btn ghost" id="prevClearFilterBtn" style="display:none;">Limpar filtro</button>
+          </div>
         </div>
+        <div id="prevContent" class="prev-grid"></div>
+        <footer class="page-footer">Dados da planilha VIATURAS-GERAL.</footer>
       </div>
-      <div id="prevContent" class="prev-grid"></div>
-      <footer class="page-footer">Dados da planilha VIATURAS-GERAL.</footer>
+
+      <div class="prev-panel" id="prevPanel-atualizar">
+        <div class="prev-form">
+          <h2 id="prevFormTitle">✎ Registrar Manutenção Preventiva</h2>
+          <p class="help">Escolha a viatura e atualize o KM atual, registre uma troca de óleo, ou os dois. Cada bloco é independente.</p>
+
+          <div class="prev-form-bloco">
+            <h3>Viatura</h3>
+            <div class="campo">
+              <label for="pf-busca">Prefixo ou placa</label>
+              <input type="text" id="pf-busca" placeholder="Digite ABT-17 ou QKV-9675…" autocomplete="off" autocapitalize="characters" list="pf-lista">
+              <datalist id="pf-lista"></datalist>
+              <span class="dica" id="pf-busca-dica">Digite para filtrar. Selecione uma viatura para continuar.</span>
+            </div>
+          </div>
+
+          <div class="prev-info-card" id="pf-info">
+            <div class="titulo">
+              <span id="pf-info-prefixo">—</span>
+              <span class="placa" id="pf-info-placa">—</span>
+            </div>
+            <div class="linha"><span>KM atual</span><b id="pf-info-km">—</b></div>
+            <div class="linha"><span>Última troca</span><b id="pf-info-data">—</b></div>
+            <div class="linha"><span>KM da troca</span><b id="pf-info-kmtroca">—</b></div>
+            <div class="linha"><span>OS da troca</span><b id="pf-info-os">—</b></div>
+          </div>
+
+          <div class="prev-form-bloco">
+            <h3>Atualizar KM atual (B6)</h3>
+            <div class="campo">
+              <label for="pf-km">Novo KM</label>
+              <input type="text" id="pf-km" placeholder="ex: 99296" inputmode="numeric" autocomplete="off">
+              <span class="dica" id="pf-km-dica">—</span>
+            </div>
+          </div>
+
+          <div class="prev-form-bloco opcional">
+            <h3>Registrar troca de óleo (E13 / F13 / P13)</h3>
+            <div class="campo">
+              <label for="pf-data">Data da troca</label>
+              <input type="date" id="pf-data" autocomplete="off">
+            </div>
+            <div class="campo">
+              <label for="pf-kmtroca">KM da troca</label>
+              <input type="text" id="pf-kmtroca" placeholder="ex: 98200" inputmode="numeric" autocomplete="off">
+            </div>
+            <div class="campo">
+              <label for="pf-os">Nº da OS</label>
+              <input type="text" id="pf-os" placeholder="ex: 1890" autocomplete="off">
+            </div>
+            <span class="dica">Preencha os três ou deixe os três vazios.</span>
+          </div>
+
+          <p id="pf-error" class="modal-error" style="margin-top:14px;"></p>
+
+          <div class="prev-form-actions">
+            <button class="btn ghost" id="pf-cancel">Cancelar</button>
+            <button class="btn primary" id="pf-save">Salvar</button>
+          </div>
+        </div>
+        <footer class="page-footer">As alterações são gravadas na aba individual de cada viatura.</footer>
+      </div>
     </section>
 
     <section class="view" id="view-manutencao">
@@ -1074,7 +1174,7 @@ const PERMISSOES_LISTA = [
   { key:'manut_excluir', label:'· Excluir processo (aberto)', grupo:'Movimentação' },
   { key:'manut_excluir_fechado', label:'· Excluir processo finalizado', grupo:'Movimentação' },
   { key:'ver_preventiva', label:'Ver Manutenção Preventiva', grupo:'Manutenção Preventiva' },
-  { key:'prev_editar_km', label:'· Editar KM (em breve)', grupo:'Manutenção Preventiva' },
+  { key:'prev_editar_km', label:'· Editar KM / Registrar troca', grupo:'Manutenção Preventiva' },
   { key:'admin_usuarios', label:'Gerenciar usuários (tudo)', grupo:'Usuários' },
   { key:'usuarios_criar', label:'· Criar contas', grupo:'Usuários' },
   { key:'usuarios_editar', label:'· Editar contas', grupo:'Usuários' },
@@ -1404,7 +1504,10 @@ function showView(name){
   if(name === 'home') renderHome();
   if(name === 'os' && OS_DATA.length) renderOS();
   if(name === 'viaturas' && VIATURAS.length) renderViaturas();
-  if(name === 'preventiva'){ if(PREV_VIATURAS.length) renderPreventiva(); else loadDataPreventiva(); }
+  if(name === 'preventiva'){
+    if(PREV_VIATURAS.length) renderPreventiva(); else loadDataPreventiva();
+    showPrevTab(PREV_TAB_ATUAL || 'painel');
+  }
   if(name === 'manutencao'){ if(MANUT_EVENTOS.length) renderManut(); showManutTab(activeManutTab || 'registros'); }
   if(name === 'usuarios') carregarUsuarios();
 }
@@ -1416,6 +1519,7 @@ function aplicarPermissoesUI(){
   $('homeManutSection').style.display = temPermissao('ver_manutencao') ? '' : 'none';
   const uBtn = $('sidebarUsuariosBtn'); if(uBtn) uBtn.style.display = podeVerUsuarios() ? '' : 'none';
   const movGroup = $('sidebarMovGroup'); if(movGroup) movGroup.style.display = temPermissao('ver_manutencao') ? '' : 'none';
+  const prevGroup = $('sidebarPrevGroup'); if(prevGroup) prevGroup.style.display = temPermissao('ver_preventiva') ? '' : 'none';
 }
 
 function renderHome(){
@@ -1574,7 +1678,7 @@ function getDadosFiltradosOS(eventoFiltro){
   return dados;
 }
 
-/* ═══════ RENDER GERAL — MELHORIA #1 e #2: row compacto, sem pill duplicado ═══════ */
+/* ═══════ RENDER GERAL ═══════ */
 function renderGeralOS(eventoFiltro){
   const dados = getDadosFiltradosOS(eventoFiltro);
   const podeStatus = temPermissao('os_status'); const podeEditar = temPermissao('os_editar');
@@ -3165,6 +3269,200 @@ function renderPreventiva(){
   if(cb) cb.style.display = (PREV_FILTRO_SITUACAO || PREV_FILTRO_OLEO || q) ? 'inline-block' : 'none';
 }
 
+/* ═══════ ATUALIZAR PREVENTIVA ═══════ */
+let PREV_TAB_ATUAL = 'painel';
+let PREV_LISTA_COMPLETA = [];
+let PREV_VIATURA_SELECIONADA = null;
+
+function setSidebarPrevExpanded(v){
+  var sub = $('sidebarSubPrev');
+  var parent = $('sidebarPrevParent');
+  if(sub) sub.classList.toggle('open', !!v);
+  if(parent) parent.classList.toggle('expanded', !!v);
+}
+
+function showPrevTab(name){
+  if(name !== 'painel' && name !== 'atualizar') return;
+  if(name === 'atualizar' && !temPermissao('prev_editar_km')) name = 'painel';
+  PREV_TAB_ATUAL = name;
+  document.querySelectorAll('#sidebarSubPrev .sidebar-sublink').forEach(b => {
+    b.classList.toggle('active', b.dataset.prevTab === name);
+  });
+  var pPainel = $('prevPanel-painel');
+  var pAtual  = $('prevPanel-atualizar');
+  if(pPainel) pPainel.classList.toggle('active', name === 'painel');
+  if(pAtual)  pAtual.classList.toggle('active', name === 'atualizar');
+  setSidebarPrevExpanded(true);
+  if(name === 'atualizar'){
+    if(PREV_LISTA_COMPLETA.length === 0) loadListaCompletaPreventiva();
+    setTimeout(() => { var i = $('pf-busca'); if(i) i.focus(); }, 60);
+  }
+}
+
+async function loadListaCompletaPreventiva(){
+  try{
+    var r = await apiPrev('listarTodasViaturas');
+    if(!r.ok){ console.error('listarTodasViaturas:', r.error); return; }
+    PREV_LISTA_COMPLETA = Array.isArray(r.viaturas) ? r.viaturas : [];
+    montarDatalistViaturas();
+  }catch(e){ console.error(e); }
+}
+
+function montarDatalistViaturas(){
+  var dl = $('pf-lista'); if(!dl) return;
+  dl.innerHTML = PREV_LISTA_COMPLETA.map(function(v){
+    var label = v.prefixo + ' · ' + (v.placa || '—') + (v.locado ? ' (locada)' : '');
+    return '<option value="' + escapeAttr(v.prefixo) + '">' + escapeHtml(label) + '</option>';
+  }).join('');
+}
+
+function _fmtKmPrev(n){
+  if(n == null || isNaN(n)) return '—';
+  return Number(n).toLocaleString('pt-BR') + ' km';
+}
+
+function _fmtDataISOparaBR(iso){
+  if(!iso) return '';
+  var p = String(iso).split('-');
+  if(p.length !== 3) return iso;
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function selecionarViaturaPreventiva(prefixo){
+  var v = PREV_LISTA_COMPLETA.find(function(x){ return x.prefixo === prefixo; });
+  if(!v) return;
+  PREV_VIATURA_SELECIONADA = v;
+  $('pf-info').classList.add('show');
+  $('pf-info-prefixo').textContent = v.prefixo + (v.locado ? ' · locada' : '');
+  $('pf-info-placa').textContent = v.placa || '—';
+  $('pf-info-km').textContent = _fmtKmPrev(v.kmAtual);
+  $('pf-info-data').textContent = v.ultimaTroca || '—';
+  $('pf-info-kmtroca').textContent = _fmtKmPrev(v.kmUltima);
+  $('pf-info-os').textContent = v.osTroca || '—';
+  $('pf-busca-dica').textContent = 'Viatura selecionada.';
+  atualizarDicaKm();
+}
+
+function atualizarDicaKm(){
+  var dica = $('pf-km-dica'); if(!dica) return;
+  var raw = $('pf-km').value.trim();
+  if(!raw){ dica.textContent = '—'; dica.className = 'dica'; return; }
+  var n = parseFloat(raw.replace(/\./g,'').replace(',', '.'));
+  if(isNaN(n)){ dica.textContent = 'Valor inválido.'; dica.className = 'dica negativo'; return; }
+  if(!PREV_VIATURA_SELECIONADA || PREV_VIATURA_SELECIONADA.kmAtual == null){
+    dica.textContent = 'Sem referência anterior.'; dica.className = 'dica'; return;
+  }
+  var antigo = PREV_VIATURA_SELECIONADA.kmAtual;
+  var dif = n - antigo;
+  var sinal = dif >= 0 ? '+' : '';
+  dica.textContent = sinal + dif.toLocaleString('pt-BR') + ' km (antes: ' + antigo.toLocaleString('pt-BR') + ')';
+  dica.className = 'dica ' + (dif < 0 ? 'negativo' : 'positivo');
+}
+
+function limparFormularioPreventiva(){
+  PREV_VIATURA_SELECIONADA = null;
+  $('pf-busca').value = '';
+  $('pf-busca-dica').textContent = 'Digite para filtrar. Selecione uma viatura para continuar.';
+  $('pf-info').classList.remove('show');
+  $('pf-km').value = '';
+  $('pf-km-dica').textContent = '—';
+  $('pf-km-dica').className = 'dica';
+  $('pf-data').value = '';
+  $('pf-kmtroca').value = '';
+  $('pf-os').value = '';
+  $('pf-error').style.display = 'none';
+  $('pf-error').textContent = '';
+}
+
+async function salvarPreventivaForm(){
+  var err = $('pf-error'); var btn = $('pf-save');
+  err.style.display = 'none'; err.textContent = '';
+
+  if(!PREV_VIATURA_SELECIONADA){
+    err.textContent = 'Selecione uma viatura primeiro.';
+    err.style.display = 'block';
+    return;
+  }
+
+  var kmRaw = $('pf-km').value.trim();
+  var dataTroca = $('pf-data').value;
+  var kmTrocaRaw = $('pf-kmtroca').value.trim();
+  var osTroca = $('pf-os').value.trim();
+
+  var temKm = kmRaw !== '';
+  var preencheuAlgoTroca = (dataTroca || kmTrocaRaw || osTroca);
+  var trocaCompleta = (dataTroca && kmTrocaRaw && osTroca);
+
+  if(!temKm && !preencheuAlgoTroca){
+    err.textContent = 'Preencha o KM atual ou os campos da troca.';
+    err.style.display = 'block';
+    return;
+  }
+
+  if(preencheuAlgoTroca && !trocaCompleta){
+    err.textContent = 'A troca de óleo precisa dos 3 campos: data, KM e OS.';
+    err.style.display = 'block';
+    return;
+  }
+
+  if(temKm && PREV_VIATURA_SELECIONADA.kmAtual != null){
+    var novoKm = parseFloat(kmRaw.replace(/\./g,'').replace(',', '.'));
+    if(!isNaN(novoKm) && novoKm < PREV_VIATURA_SELECIONADA.kmAtual){
+      var antigoFmt = PREV_VIATURA_SELECIONADA.kmAtual.toLocaleString('pt-BR');
+      var novoFmt = novoKm.toLocaleString('pt-BR');
+      var ok = confirm(
+        '⚠️ O novo KM (' + novoFmt + ') é menor que o atual (' + antigoFmt + ').\n\n' +
+        'Confirma que este valor está correto?'
+      );
+      if(!ok) return;
+    }
+  }
+
+  btn.disabled = true; btn.textContent = 'Salvando…';
+
+  var payload = { prefixo: PREV_VIATURA_SELECIONADA.prefixo };
+  if(temKm) payload.novoKm = kmRaw;
+  if(trocaCompleta){
+    payload.dataTroca = _fmtDataISOparaBR(dataTroca);
+    payload.kmTroca = kmTrocaRaw;
+    payload.osTroca = osTroca;
+  }
+
+  var r = await apiPrev('salvarPreventiva', payload);
+
+  btn.disabled = false; btn.textContent = 'Salvar';
+
+  if(!r.ok){
+    err.textContent = r.error || 'Erro ao salvar.';
+    err.style.display = 'block';
+    return;
+  }
+
+  var resumo = [];
+  if(r.acoes && r.acoes.km){
+    var a = r.acoes.km;
+    var dif = a.diferenca != null ? (a.diferenca >= 0 ? '+' : '') + a.diferenca.toLocaleString('pt-BR') : '—';
+    resumo.push(['KM atual', (a.kmAntigo != null ? a.kmAntigo.toLocaleString('pt-BR') : '—') + ' → ' + a.kmNovo.toLocaleString('pt-BR') + ' (' + dif + ')']);
+  }
+  if(r.acoes && r.acoes.troca){
+    var t = r.acoes.troca;
+    resumo.push(['Data da troca', t.dataTroca]);
+    resumo.push(['KM da troca', Number(t.kmTroca).toLocaleString('pt-BR') + ' km']);
+    resumo.push(['OS da troca', t.osTroca]);
+  }
+
+  limparFormularioPreventiva();
+  try{ sessionStorage.removeItem(STORAGE_KEY_PREV); }catch(e){}
+  await Promise.all([loadListaCompletaPreventiva(), loadDataPreventiva()]);
+
+  mostrarSucesso({
+    titulo: 'Manutenção registrada!',
+    sub: 'Viatura: ' + payload.prefixo,
+    resumo: resumo,
+    mensagemWhats: ''
+  });
+}
+
 /* ═══════ USUÁRIOS ═══════ */
 let USUARIOS_CACHE = [];
 async function carregarUsuarios(){
@@ -3225,7 +3523,7 @@ function iniciarPolling(){
     if(activeView === 'os' && temPermissao('ver_os')) await loadDataOS();
     if(activeView === 'viaturas' && temPermissao('ver_viaturas')) await loadDataViaturas();
     if(activeView === 'manutencao' && temPermissao('ver_manutencao')) await loadDataManut();
-    if(activeView === 'preventiva' && temPermissao('ver_preventiva')) await loadDataPreventiva();
+    if(activeView === 'preventiva' && temPermissao('ver_preventiva') && PREV_TAB_ATUAL === 'painel') await loadDataPreventiva();
   }, POLLING_INTERVAL);
 }
 document.addEventListener('visibilitychange', () => {
@@ -3253,7 +3551,27 @@ $('menuToggle').addEventListener('click', () => {
   else { app.classList.toggle('sidebar-collapsed'); try{ localStorage.setItem('deman_sidebar_collapsed', app.classList.contains('sidebar-collapsed') ? '1' : '0'); }catch(e){} }
 });
 $('sidebarBackdrop').addEventListener('click', () => $('app').classList.remove('sidebar-open'));
-document.querySelectorAll('.sidebar-link[data-view]').forEach(btn => { if(btn.id === 'sidebarMovParent') return; btn.addEventListener('click', () => showView(btn.dataset.view)); });
+document.querySelectorAll('.sidebar-link[data-view]').forEach(btn => {
+  if(btn.id === 'sidebarMovParent') return;
+  if(btn.id === 'sidebarPrevParent') return;
+  btn.addEventListener('click', () => showView(btn.dataset.view));
+});
+$('sidebarPrevParent').addEventListener('click', () => {
+  if(activeView !== 'preventiva'){
+    showView('preventiva');
+    setSidebarPrevExpanded(true);
+  } else {
+    var sub = $('sidebarSubPrev');
+    setSidebarPrevExpanded(!(sub && sub.classList.contains('open')));
+  }
+});
+document.querySelectorAll('#sidebarSubPrev .sidebar-sublink').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showView('preventiva');
+    showPrevTab(btn.dataset.prevTab);
+  });
+});
 $('sidebarMovParent').addEventListener('click', () => { if(activeView !== 'manutencao'){ showView('manutencao'); setSidebarMovExpanded(true); } else { setSidebarMovExpanded(!sidebarMovExpanded); } });
 document.querySelectorAll('#sidebarSubMov .sidebar-sublink').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); showView('manutencao'); if(btn.dataset.manutTab === 'novo'){ limparFormManut(); } showManutTab(btn.dataset.manutTab); }); });
 $('logoutBtn').addEventListener('click', handleLogout);
@@ -3341,6 +3659,25 @@ $('prevClearFilterBtn').addEventListener('click', () => {
   $('prevFiltroSituacao').value = ''; $('prevFiltroOleo').value = ''; $('prevSearch').value = '';
   renderPreventiva();
 });
+
+$('pf-busca').addEventListener('input', (e) => {
+  var valor = e.target.value.trim().toUpperCase();
+  var exato = PREV_LISTA_COMPLETA.find(function(v){ return v.prefixo.toUpperCase() === valor; });
+  if(exato){
+    selecionarViaturaPreventiva(exato.prefixo);
+  } else {
+    PREV_VIATURA_SELECIONADA = null;
+    $('pf-info').classList.remove('show');
+    $('pf-busca-dica').textContent = 'Digite para filtrar. Selecione uma viatura para continuar.';
+  }
+});
+$('pf-km').addEventListener('input', atualizarDicaKm);
+$('pf-cancel').addEventListener('click', () => {
+  limparFormularioPreventiva();
+  showPrevTab('painel');
+});
+$('pf-save').addEventListener('click', salvarPreventivaForm);
+
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; MANUT_FILTRO_TIPO = ''; $('manutFiltroTipo').value = ''; renderManut(); });
 $('manutFiltroTipo').addEventListener('change', e => { MANUT_FILTRO_TIPO = e.target.value; renderManut(); });
@@ -3403,7 +3740,7 @@ if(isLoggedIn()){
   currentLogin = sessionStorage.getItem('deman_user_login') || '';
   currentUser = sessionStorage.getItem('deman_user_nome') || '';
   currentPerfil = sessionStorage.getItem('deman_user_perfil') || 'view';
-  try{ currentPermissoes = JSON.parse(sessionStorage.getItem('deman_user_permisssoes') || sessionStorage.getItem('deman_user_permissoes') || '{}'); }catch(e){ currentPermissoes = {}; }
+  try{ currentPermissoes = JSON.parse(sessionStorage.getItem('deman_user_permissoes') || '{}'); }catch(e){ currentPermissoes = {}; }
   startApp();
 } else { showLogin(); }
 
