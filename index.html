@@ -878,6 +878,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
             </label>
             <label>Entrada<input type="datetime-local" id="mm-entrada"></label>
             <label>Local<div class="local-field-wrap" id="mm-local-wrap" data-valor=""></div></label>
+            <label class="full">Solicitante (opcional)<input type="text" id="mm-solicitante" placeholder="Quem solicitou a movimentação"></label>
             <label class="full">Informante<input type="text" id="mm-informante" placeholder="ex: Capitão Bita"></label>
             <label class="full">Motivo / Detalhes da entrada
               <textarea id="mm-detalhes" rows="3" placeholder="Descreva o problema identificado…"></textarea>
@@ -2288,6 +2289,7 @@ function agruparPorProcesso(){
     g.ultimo = g.eventos[g.eventos.length - 1];
     g.dias = g.finalizacao ? extrairDiasNumericos(g.finalizacao.dias) : 0;
     if(g.entrada && g.entrada.tipo) g.tipo = g.entrada.tipo;
+    g.solicitante = (g.entrada && g.entrada.solicitante) ? g.entrada.solicitante : '';
   });
   return grupos;
 }
@@ -2351,6 +2353,7 @@ function processosFiltrados(){
       const g = grupos[id];
       if(normalizeStr(g.viatura).includes(q)) return true;
       if(normalizeStr(g.id).includes(q)) return true;
+      if(normalizeStr(g.solicitante).includes(q)) return true;
       return g.eventos.some(e =>
         normalizeStr(e.local).includes(q) ||
         normalizeStr(e.informante).includes(q) ||
@@ -2422,6 +2425,7 @@ function renderManutGrid(){
     const badge = p.aberto ? '<span class="manut-proc-badge aberto">🟡 Aberto</span>' : '<span class="manut-proc-badge fechado">✅ Fechado</span>';
     const dataBadge = p.aberto ? `Desde ${escapeHtml(p.entrada ? p.entrada.data : '—')}` : `Fechado em ${escapeHtml(p.finalizacao ? p.finalizacao.data : '—')}`;
     const diasTxt = p.finalizacao ? `${p.dias}d` : '';
+    const solicitanteHtml = p.solicitante ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--azul);">👤 Solicitado por ${escapeHtml(p.solicitante)}</span>` : '';
 
     return `<div class="manut-proc-card ${classe}">
       <div class="manut-proc-head">
@@ -2441,6 +2445,7 @@ function renderManutGrid(){
         <span class="manut-pill ${ultimoStatusClasse}"><span class="dot" style="background:${corStatus(ultimoStatusClasse)}"></span>${escapeHtml(statusLabel)}</span>
         <span>${localAtual}</span>
         <span style="color:var(--text-faint);">· ${p.eventos.length} evento${p.eventos.length>1?'s':''} · ${dataBadge}</span>
+        ${solicitanteHtml}
       </div>
       <div class="manut-timeline">${eventosHtml}</div>
       <div class="manut-proc-actions">${acoes}</div>
@@ -2559,12 +2564,14 @@ function preencherProcInfoBox(p){
   const det = p.entrada ? p.entrada.detalhes : '';
   const tipo = p.tipo || TIPO_VIATURA;
   const labelItem = tipo === TIPO_OUTRO ? 'Item' : 'Viatura';
+  const solicitante = p.solicitante || (p.entrada ? p.entrada.solicitante : '');
   $('procInfoBox').innerHTML = `
     <div class="row"><span>Tipo</span><b>${escapeHtml(tipo)}</b></div>
     <div class="row"><span>Processo</span><b>${escapeHtml(p.id)}</b></div>
     <div class="row"><span>${labelItem}</span><b>${escapeHtml(p.viatura)}</b></div>
     <div class="row"><span>Entrada</span><b>${escapeHtml(p.entrada ? p.entrada.data : '—')}</b></div>
     <div class="row"><span>Local entrada</span><b>${escapeHtml(p.entrada ? p.entrada.local : '—')}</b></div>
+    ${solicitante ? `<div class="row"><span>Solicitante</span><b>${escapeHtml(solicitante)}</b></div>` : ''}
     <div class="row"><span>Informante</span><b>${escapeHtml(inf || '—')}</b></div>
     ${det ? `<div class="row"><span>Motivo</span><b style="text-align:right;max-width:65%;">${escapeHtml(det)}</b></div>` : ''}
   `;
@@ -2613,6 +2620,7 @@ function limparFormManut(){
   $('mm-entrada').value = agoraDatetimeLocal(); $('mm-entrada').disabled = false;
   montarCampoLocal('mm-local-wrap', '', $('mm-status').value, false);
   atualizarFormPorTipo();
+  $('mm-solicitante').value = ''; $('mm-solicitante').disabled = false;
   $('mm-informante').value = ''; $('mm-informante').disabled = false;
   $('mm-detalhes').value = ''; $('mm-detalhes').disabled = false;
 
@@ -2669,7 +2677,7 @@ function abrirFormFinalizar(p){
 function cancelarFormManut(){
   let temDados = false;
   if(modoManutForm === 'criar'){
-    temDados = $('mm-tipo').value !== '' || $('mm-viatura').value.trim() !== '' || lerLocalForm('mm-local-wrap') !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
+    temDados = $('mm-tipo').value !== '' || $('mm-viatura').value.trim() !== '' || lerLocalForm('mm-local-wrap') !== '' || $('mm-solicitante').value.trim() !== '' || $('mm-informante').value.trim() !== '' || $('mm-detalhes').value.trim() !== '';
   } else if(modoManutForm === 'evento'){
     temDados = $('me-detalhes').value.trim() !== '' || $('me-informante').value.trim() !== '';
   } else if(modoManutForm === 'finalizar'){
@@ -2693,6 +2701,7 @@ async function salvarCriarManut(){
   const status     = $('mm-status').value;
   const entrada    = $('mm-entrada').value;
   const local      = lerLocalForm('mm-local-wrap');
+  const solicitante= $('mm-solicitante').value.trim();
   const informante = $('mm-informante').value.trim();
   const detalhes   = $('mm-detalhes').value.trim();
   if(!tipo){ err.textContent = 'Selecione o tipo (Viatura ou Outro).'; err.style.display='block'; return; }
@@ -2703,7 +2712,7 @@ async function salvarCriarManut(){
   if(!entrada){ err.textContent = 'Informe a data de entrada.'; err.style.display='block'; return; }
   if(!informante){ err.textContent = 'Informe o informante.'; err.style.display='block'; return; }
   btn.disabled = true; btn.textContent = 'Salvando…';
-  const r = await apiManut('criarProcesso', { tipo, viatura, status, entrada, local, informante, detalhes });
+  const r = await apiManut('criarProcesso', { tipo, viatura, status, entrada, local, solicitante, informante, detalhes });
   btn.disabled = false; btn.textContent = 'Criar processo';
   if(!r.ok){
     err.textContent = r.error || 'Erro ao salvar.';
@@ -2723,21 +2732,23 @@ async function salvarCriarManut(){
   const procCriado = grupos[r.id];
   const mensagem = procCriado
     ? montarMensagemEntrada(procCriado)
-    : montarMensagemEntrada({ id: r.id, viatura, status, entrada, local, informante, detalhes, tipo });
+    : montarMensagemEntrada({ id: r.id, viatura, status, entrada, local, solicitante, informante, detalhes, tipo });
 
   const entradaFmt = toDatetimeLocalManut(entrada);
   const entradaBR = entradaFmt ? entradaFmt.split('T')[0].split('-').reverse().join('/') : '—';
+  const resumoSucesso = [
+    ['Tipo', tipo],
+    ['ID', r.id],
+    [tipo === TIPO_OUTRO ? 'Item' : 'Viatura', viatura],
+    ['Status', statusLabelManut(status)],
+    ['Local', local || '—'],
+    ['Entrada', entradaBR]
+  ];
+  if(solicitante) resumoSucesso.push(['Solicitante', solicitante]);
+  resumoSucesso.push(['Informante', informante]);
   mostrarSucesso({
     titulo: 'Processo criado!', sub: 'ID: ' + r.id,
-    resumo: [
-      ['Tipo', tipo],
-      ['ID', r.id],
-      [tipo === TIPO_OUTRO ? 'Item' : 'Viatura', viatura],
-      ['Status', statusLabelManut(status)],
-      ['Local', local || '—'],
-      ['Entrada', entradaBR],
-      ['Informante', informante]
-    ],
+    resumo: resumoSucesso,
     mensagemWhats: mensagem
   });
   limparFormManut();
@@ -2839,7 +2850,7 @@ function normalizarEventoParaMensagem(e){
   };
 }
 function normalizarProcessoParaMensagem(p){
-  if(!p) return { id:'', viatura:'', status:'', local:'', entrada:'', informanteEntrada:'', saida:'', informanteSaida:'', dias:'', detalhes:'', eventos:[] };
+  if(!p) return { id:'', viatura:'', status:'', local:'', entrada:'', informanteEntrada:'', saida:'', informanteSaida:'', dias:'', detalhes:'', eventos:[], solicitante:'' };
   if(Array.isArray(p.eventos) && p.eventos.length > 0){
     const entrada = p.eventos.find(e => normalizeStr(e.evento || e.tipo).indexOf('entrada') !== -1) || p.eventos[0];
     const finalizacao = p.eventos.find(e => normalizeStr(e.evento || e.tipo).indexOf('finaliz') !== -1) || null;
@@ -2851,6 +2862,7 @@ function normalizarProcessoParaMensagem(p){
       local: ultimo ? (ultimo.local || '') : '',
       entrada: entrada ? (entrada.data || '') : '',
       informanteEntrada: entrada ? (entrada.informante || '') : '',
+      solicitante: (p.solicitante || (entrada ? entrada.solicitante : '')) || '',
       saida: finalizacao ? (finalizacao.data || '') : '',
       informanteSaida: finalizacao ? (finalizacao.informante || '') : '',
       dias: finalizacao ? (finalizacao.dias || '') : '',
@@ -2865,6 +2877,7 @@ function normalizarProcessoParaMensagem(p){
     local: p.local || '',
     entrada: typeof p.entrada === 'string' ? p.entrada : '',
     informanteEntrada: p.informanteEntrada || '',
+    solicitante: p.solicitante || '',
     saida: p.saida || '',
     informanteSaida: p.informanteSaida || '',
     dias: p.dias || '',
@@ -2898,6 +2911,7 @@ function montarMensagemEntrada(p){
     linhas.push('*Status:* ' + statusLabelManut(ev.status || proc.status));
     linhas.push('*Local:* ' + (ev.local || '—'));
     linhas.push('*Entrada:* ' + (ev.data || '—'));
+    if(proc.solicitante) linhas.push('*Solicitante:* ' + proc.solicitante);
     if(ev.informante) linhas.push('*Informante:* ' + ev.informante);
     if(ev.detalhes){
       linhas.push('');
@@ -2912,6 +2926,7 @@ function montarMensagemEntrada(p){
     linhas.push('*Status:* ' + statusLabelManut(proc.status));
     linhas.push('*Local:* ' + (proc.local || '—'));
     linhas.push('*Entrada:* ' + (proc.entrada || '—'));
+    if(proc.solicitante) linhas.push('*Solicitante:* ' + proc.solicitante);
     proc.eventos.forEach(ev => {
       linhas.push('');
       linhas.push(montarBlocoEvento(ev));
@@ -2933,6 +2948,7 @@ function montarMensagemFinalizacao(p){
   linhas.push('');
   linhas.push('*Tipo:* ' + tipo);
   linhas.push('*' + labelItem + ':* ' + proc.viatura);
+  if(proc.solicitante) linhas.push('*Solicitante:* ' + proc.solicitante);
   linhas.push('*Status final:* ' + statusLabelManut(proc.status));
   linhas.push('*Local final:* ' + (proc.local || '—'));
   linhas.push('*Entrada:* ' + (proc.entrada || '—'));
