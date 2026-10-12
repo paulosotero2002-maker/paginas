@@ -572,7 +572,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 .prev-form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap;}
 .prev-form-actions .btn{padding:10px 18px;font-size:14px;}
 
-/* ─── Caminhão de bombeiro pixel art (tela inicial) ─── */
+/* ─── Comboio de viaturas (tela inicial) ─── */
 .home-fire-truck{
   position:absolute;
   left:0; right:0; bottom:4px;
@@ -585,27 +585,39 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   position:absolute;
   bottom:0;
   left:0;
-  width:144px;
+  width:150px;
   height:72px;
   transform: translateX(-200px);
-  animation: truck-drive 15s linear infinite !important;
+  animation: truck-drive 20s linear infinite !important;
   will-change: transform;
 }
+.home-fire-truck .truck-body:nth-child(1){ animation-delay: 0s; }
+.home-fire-truck .truck-body:nth-child(2){ animation-delay: 5s; }
+.home-fire-truck .truck-body:nth-child(3){ animation-delay: 10s; }
+.home-fire-truck .truck-body:nth-child(4){ animation-delay: 15s; }
 .home-fire-truck svg{
   width:100%;
   height:100%;
   display:block;
-  shape-rendering: crispEdges;
-  image-rendering: pixelated;
-  animation: truck-bob 0.45s steps(2) infinite !important;
 }
 @keyframes truck-drive{
   0%   { transform: translateX(-200px); }
   100% { transform: translateX(2500px); }
 }
-@keyframes truck-bob{
-  0%, 100%{ transform: translateY(0); }
-  50%     { transform: translateY(-2px); }
+.home-fire-truck .wheel{
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: truck-wheel 1.2s linear infinite !important;
+}
+@keyframes truck-wheel{
+  to{ transform: rotate(360deg); }
+}
+.home-fire-truck .siren{
+  animation: siren-flash 0.8s ease-in-out infinite !important;
+}
+@keyframes siren-flash{
+  0%, 100%{ opacity: 1; }
+  50%     { opacity: 0.35; }
 }
 .home-fire-truck .wheel{
   transform-box: fill-box;
@@ -747,49 +759,232 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
       <div class="home-welcome">
         <h2>Bem-vindo, <span id="homeUserName">—</span></h2>
         <p>Resumo em tempo real dos painéis.</p>
-        <div class="home-fire-truck" aria-hidden="true">
-          <div class="truck-body">
-<svg viewBox="0 0 32 16" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-  <rect x="1" y="15" width="30" height="1" fill="rgba(0,0,0,.5)"/>
+<div class="home-fire-truck" aria-hidden="true">
 
-  <g class="wheel">
-    <rect x="4" y="12" width="5" height="3" fill="#111"/>
-    <rect x="5" y="13" width="3" height="1" fill="#555"/>
-  </g>
-  <g class="wheel">
-    <rect x="23" y="12" width="5" height="3" fill="#111"/>
-    <rect x="24" y="13" width="3" height="1" fill="#555"/>
-  </g>
+  <!-- CAMINHÃO 1 · Clássico com escada -->
+  <div class="truck-body">
+    <svg viewBox="0 0 150 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="75" cy="68" rx="70" ry="3" fill="rgba(0,0,0,.28)"/>
+      <g class="wheel">
+        <circle cx="35" cy="58" r="12" fill="#1A1A1A"/>
+        <circle cx="35" cy="58" r="9" fill="#424242"/>
+        <circle cx="35" cy="58" r="6" fill="#8C8C8C"/>
+        <circle cx="35" cy="58" r="2.5" fill="#1A1A1A"/>
+        <rect x="34" y="49" width="2" height="18" fill="#424242"/>
+        <rect x="26" y="57" width="18" height="2" fill="#424242"/>
+      </g>
+      <g class="wheel">
+        <circle cx="112" cy="58" r="11" fill="#1A1A1A"/>
+        <circle cx="112" cy="58" r="8" fill="#424242"/>
+        <circle cx="112" cy="58" r="5.5" fill="#8C8C8C"/>
+        <circle cx="112" cy="58" r="2" fill="#1A1A1A"/>
+        <rect x="111" y="50" width="2" height="16" fill="#424242"/>
+        <rect x="104" y="57" width="16" height="2" fill="#424242"/>
+      </g>
+      <rect x="12" y="22" width="88" height="40" fill="#C62828"/>
+      <rect x="12" y="22" width="88" height="3" fill="#E53935"/>
+      <rect x="12" y="59" width="88" height="3" fill="#7F0000"/>
+      <rect x="12" y="30" width="88" height="7" fill="#ECEFF1"/>
+      <rect x="12" y="30" width="88" height="1" fill="#FFFFFF"/>
+      <rect x="20" y="42" width="14" height="12" fill="#A31515" stroke="#7F0000" stroke-width="0.5"/>
+      <rect x="38" y="42" width="14" height="12" fill="#A31515" stroke="#7F0000" stroke-width="0.5"/>
+      <rect x="56" y="42" width="14" height="12" fill="#A31515" stroke="#7F0000" stroke-width="0.5"/>
+      <circle cx="24" cy="27" r="1.8" fill="#546E7A"/>
+      <circle cx="34" cy="27" r="1.8" fill="#546E7A"/>
+      <circle cx="44" cy="27" r="1.8" fill="#546E7A"/>
+      <rect x="76" y="50" width="10" height="12" fill="#A31515" stroke="#7F0000" stroke-width="0.5"/>
+      <path d="M 100 22 L 100 62 L 145 62 L 145 38 Q 145 28 137 22 Z" fill="#C62828"/>
+      <path d="M 100 22 L 100 25 L 145 25 L 145 38 Q 145 28 137 22 Z" fill="#E53935"/>
+      <path d="M 104 28 L 104 42 L 141 42 L 141 33 Q 141 30 138 28 Z" fill="#90CAF9"/>
+      <path d="M 104 28 L 104 32 L 141 32 L 141 33 Q 141 30 138 28 Z" fill="#BBDEFB" opacity="0.6"/>
+      <rect x="99" y="34" width="3" height="6" fill="#37474F"/>
+      <rect x="96" y="35" width="6" height="4" fill="#546E7A"/>
+      <rect x="143" y="48" width="3" height="4" fill="#FFF59D"/>
+      <rect x="144" y="49" width="2" height="2" fill="#FFFFFF"/>
+      <rect x="143" y="44" width="3" height="2.5" fill="#FDD835"/>
+      <rect x="141" y="58" width="7" height="4" fill="#37474F"/>
+      <rect x="141" y="58" width="7" height="1" fill="#546E7A"/>
+      <rect x="14" y="15" width="84" height="1.5" fill="#B0BEC5"/>
+      <rect x="14" y="19.5" width="84" height="1.5" fill="#B0BEC5"/>
+      <line x1="20" y1="15" x2="20" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="30" y1="15" x2="30" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="40" y1="15" x2="40" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="50" y1="15" x2="50" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="60" y1="15" x2="60" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="70" y1="15" x2="70" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="80" y1="15" x2="80" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="90" y1="15" x2="90" y2="21" stroke="#90A4AE" stroke-width="1"/>
+      <rect x="20" y="21" width="3" height="2" fill="#546E7A"/>
+      <rect x="90" y="21" width="3" height="2" fill="#546E7A"/>
+      <rect x="50" y="8" width="10" height="4" fill="#E53935" rx="1" class="siren"/>
+      <rect x="62" y="8" width="10" height="4" fill="#E53935" rx="1" class="siren"/>
+    </svg>
+  </div>
 
-  <!-- corpo -->
-  <rect x="1" y="5" width="19" height="7" fill="#D32F2F"/>
-  <rect x="1" y="11" width="19" height="1" fill="#8B0000"/>
-  <rect x="1" y="5" width="19" height="1" fill="#F44336"/>
+  <!-- CAMINHÃO 2 · Moderno com grades laterais -->
+  <div class="truck-body">
+    <svg viewBox="0 0 150 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="75" cy="68" rx="70" ry="3" fill="rgba(0,0,0,.28)"/>
+      <g class="wheel">
+        <circle cx="32" cy="58" r="12" fill="#1A1A1A"/>
+        <circle cx="32" cy="58" r="9" fill="#424242"/>
+        <circle cx="32" cy="58" r="6" fill="#8C8C8C"/>
+        <circle cx="32" cy="58" r="2.5" fill="#1A1A1A"/>
+        <rect x="31" y="49" width="2" height="18" fill="#424242"/>
+        <rect x="23" y="57" width="18" height="2" fill="#424242"/>
+      </g>
+      <g class="wheel">
+        <circle cx="112" cy="58" r="11" fill="#1A1A1A"/>
+        <circle cx="112" cy="58" r="8" fill="#424242"/>
+        <circle cx="112" cy="58" r="5.5" fill="#8C8C8C"/>
+        <circle cx="112" cy="58" r="2" fill="#1A1A1A"/>
+        <rect x="111" y="50" width="2" height="16" fill="#424242"/>
+        <rect x="104" y="57" width="16" height="2" fill="#424242"/>
+      </g>
+      <rect x="12" y="22" width="90" height="40" fill="#C62828"/>
+      <rect x="12" y="22" width="90" height="3" fill="#E53935"/>
+      <rect x="12" y="59" width="90" height="3" fill="#7F0000"/>
+      <rect x="12" y="24" width="90" height="5" fill="#ECEFF1"/>
+      <rect x="24" y="36" width="26" height="20" fill="#B0BEC5"/>
+      <line x1="24" y1="40" x2="50" y2="40" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="24" y1="44" x2="50" y2="44" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="24" y1="48" x2="50" y2="48" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="24" y1="52" x2="50" y2="52" stroke="#90A4AE" stroke-width="1"/>
+      <rect x="58" y="36" width="14" height="20" fill="#B0BEC5"/>
+      <line x1="58" y1="40" x2="72" y2="40" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="58" y1="44" x2="72" y2="44" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="58" y1="48" x2="72" y2="48" stroke="#90A4AE" stroke-width="1"/>
+      <line x1="58" y1="52" x2="72" y2="52" stroke="#90A4AE" stroke-width="1"/>
+      <circle cx="80" cy="34" r="1.5" fill="#546E7A"/>
+      <circle cx="86" cy="34" r="1.5" fill="#546E7A"/>
+      <circle cx="92" cy="34" r="1.5" fill="#546E7A"/>
+      <rect x="78" y="38" width="18" height="3" fill="#90A4AE"/>
+      <rect x="78" y="43" width="18" height="3" fill="#90A4AE"/>
+      <path d="M 102 22 L 102 62 L 145 62 L 145 32 Q 145 22 136 22 Z" fill="#C62828"/>
+      <path d="M 102 22 L 102 25 L 145 25 L 145 32 Q 145 22 136 22 Z" fill="#E53935"/>
+      <path d="M 106 28 L 106 44 L 141 44 L 141 32 Q 141 28 138 28 Z" fill="#64B5F6"/>
+      <path d="M 106 28 L 106 33 L 141 33 L 141 32 Q 141 28 138 28 Z" fill="#90CAF9" opacity="0.5"/>
+      <rect x="101" y="34" width="3" height="6" fill="#37474F"/>
+      <rect x="143" y="48" width="3" height="4" fill="#FFF59D"/>
+      <rect x="143" y="44" width="3" height="2.5" fill="#FDD835"/>
+      <rect x="141" y="58" width="7" height="4" fill="#37474F"/>
+      <rect x="46" y="8" width="12" height="4" fill="#1E88E5" rx="1" class="siren"/>
+      <rect x="60" y="8" width="12" height="4" fill="#1E88E5" rx="1" class="siren"/>
+      <rect x="128" y="8" width="10" height="4" fill="#1E88E5" rx="1" class="siren"/>
+    </svg>
+  </div>
 
-  <!-- escada -->
-  <rect x="2" y="3" width="18" height="2" fill="#9E9E9E"/>
-  <rect x="4" y="3" width="1" height="2" fill="#616161"/>
-  <rect x="8" y="3" width="1" height="2" fill="#616161"/>
-  <rect x="12" y="3" width="1" height="2" fill="#616161"/>
-  <rect x="16" y="3" width="1" height="2" fill="#616161"/>
+  <!-- CAMINHÃO 3 · Compacto com grade frontal dupla -->
+  <div class="truck-body">
+    <svg viewBox="0 0 150 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="75" cy="68" rx="70" ry="3" fill="rgba(0,0,0,.28)"/>
+      <g class="wheel">
+        <circle cx="32" cy="58" r="12" fill="#1A1A1A"/>
+        <circle cx="32" cy="58" r="9" fill="#424242"/>
+        <circle cx="32" cy="58" r="6" fill="#8C8C8C"/>
+        <circle cx="32" cy="58" r="2.5" fill="#1A1A1A"/>
+        <rect x="31" y="49" width="2" height="18" fill="#424242"/>
+        <rect x="23" y="57" width="18" height="2" fill="#424242"/>
+      </g>
+      <g class="wheel">
+        <circle cx="118" cy="58" r="11" fill="#1A1A1A"/>
+        <circle cx="118" cy="58" r="8" fill="#424242"/>
+        <circle cx="118" cy="58" r="5.5" fill="#8C8C8C"/>
+        <circle cx="118" cy="58" r="2" fill="#1A1A1A"/>
+        <rect x="117" y="50" width="2" height="16" fill="#424242"/>
+        <rect x="110" y="57" width="16" height="2" fill="#424242"/>
+      </g>
+      <rect x="12" y="20" width="90" height="42" fill="#C62828"/>
+      <rect x="12" y="20" width="90" height="3" fill="#E53935"/>
+      <rect x="12" y="59" width="90" height="3" fill="#7F0000"/>
+      <rect x="14" y="16" width="86" height="4" fill="#B0BEC5"/>
+      <rect x="14" y="16" width="86" height="1" fill="#CFD8DC"/>
+      <rect x="18" y="17" width="2" height="3" fill="#607D8B"/>
+      <rect x="94" y="17" width="2" height="3" fill="#607D8B"/>
+      <rect x="24" y="32" width="28" height="24" fill="#ECEFF1" stroke="#90A4AE" stroke-width="0.8"/>
+      <line x1="24" y1="36" x2="52" y2="36" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="40" x2="52" y2="40" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="44" x2="52" y2="44" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="48" x2="52" y2="48" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="52" x2="52" y2="52" stroke="#B0BEC5" stroke-width="1"/>
+      <rect x="56" y="32" width="22" height="24" fill="#ECEFF1" stroke="#90A4AE" stroke-width="0.8"/>
+      <line x1="56" y1="36" x2="78" y2="36" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="56" y1="40" x2="78" y2="40" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="56" y1="44" x2="78" y2="44" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="56" y1="48" x2="78" y2="48" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="56" y1="52" x2="78" y2="52" stroke="#B0BEC5" stroke-width="1"/>
+      <path d="M 102 22 L 102 62 L 145 62 L 145 40 Q 145 30 138 22 Z" fill="#C62828"/>
+      <path d="M 102 22 L 102 25 L 145 25 L 145 40 Q 145 30 138 22 Z" fill="#E53935"/>
+      <path d="M 106 28 L 106 44 L 141 44 L 141 36 Q 141 30 136 28 Z" fill="#64B5F6"/>
+      <path d="M 106 28 L 106 33 L 141 33 L 141 36 Q 141 30 136 28 Z" fill="#90CAF9" opacity="0.5"/>
+      <rect x="143" y="50" width="3" height="4" fill="#FFF59D"/>
+      <rect x="143" y="46" width="3" height="2.5" fill="#FDD835"/>
+      <rect x="141" y="58" width="7" height="4" fill="#37474F"/>
+      <rect x="116" y="8" width="12" height="4" fill="#E53935" rx="1" class="siren"/>
+    </svg>
+  </div>
 
-  <!-- cabine -->
-  <rect x="20" y="4" width="10" height="8" fill="#D32F2F"/>
-  <rect x="20" y="4" width="10" height="1" fill="#F44336"/>
-  <rect x="20" y="11" width="10" height="1" fill="#8B0000"/>
+  <!-- CAMINHÃO 4 · Auto-escada aérea -->
+  <div class="truck-body">
+    <svg viewBox="0 0 150 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="75" cy="68" rx="70" ry="3" fill="rgba(0,0,0,.28)"/>
+      <g class="wheel">
+        <circle cx="32" cy="58" r="12" fill="#1A1A1A"/>
+        <circle cx="32" cy="58" r="9" fill="#424242"/>
+        <circle cx="32" cy="58" r="6" fill="#8C8C8C"/>
+        <circle cx="32" cy="58" r="2.5" fill="#1A1A1A"/>
+        <rect x="31" y="49" width="2" height="18" fill="#424242"/>
+        <rect x="23" y="57" width="18" height="2" fill="#424242"/>
+      </g>
+      <g class="wheel">
+        <circle cx="114" cy="58" r="11" fill="#1A1A1A"/>
+        <circle cx="114" cy="58" r="8" fill="#424242"/>
+        <circle cx="114" cy="58" r="5.5" fill="#8C8C8C"/>
+        <circle cx="114" cy="58" r="2" fill="#1A1A1A"/>
+        <rect x="113" y="50" width="2" height="16" fill="#424242"/>
+        <rect x="106" y="57" width="16" height="2" fill="#424242"/>
+      </g>
+      <rect x="12" y="26" width="90" height="36" fill="#C62828"/>
+      <rect x="12" y="26" width="90" height="3" fill="#E53935"/>
+      <rect x="12" y="59" width="90" height="3" fill="#7F0000"/>
+      <rect x="24" y="34" width="30" height="22" fill="#ECEFF1" stroke="#90A4AE" stroke-width="0.8"/>
+      <line x1="24" y1="38" x2="54" y2="38" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="42" x2="54" y2="42" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="46" x2="54" y2="46" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="24" y1="50" x2="54" y2="50" stroke="#B0BEC5" stroke-width="1"/>
+      <rect x="58" y="34" width="22" height="22" fill="#ECEFF1" stroke="#90A4AE" stroke-width="0.8"/>
+      <line x1="58" y1="38" x2="80" y2="38" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="58" y1="42" x2="80" y2="42" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="58" y1="46" x2="80" y2="46" stroke="#B0BEC5" stroke-width="1"/>
+      <line x1="58" y1="50" x2="80" y2="50" stroke="#B0BEC5" stroke-width="1"/>
+      <rect x="36" y="18" width="24" height="10" fill="#B0BEC5" rx="2"/>
+      <rect x="36" y="18" width="24" height="3" fill="#CFD8DC"/>
+      <circle cx="48" cy="22" r="3" fill="#78909C"/>
+      <circle cx="48" cy="22" r="1.5" fill="#546E7A"/>
+      <line x1="36" y1="14" x2="128" y2="14" stroke="#B0BEC5" stroke-width="2"/>
+      <line x1="36" y1="6" x2="128" y2="6" stroke="#B0BEC5" stroke-width="2"/>
+      <line x1="46" y1="6" x2="46" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="56" y1="6" x2="56" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="66" y1="6" x2="66" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="76" y1="6" x2="76" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="86" y1="6" x2="86" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="96" y1="6" x2="96" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="106" y1="6" x2="106" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <line x1="116" y1="6" x2="116" y2="14" stroke="#90A4AE" stroke-width="1.5"/>
+      <rect x="124" y="4" width="12" height="12" fill="#90A4AE" rx="1"/>
+      <path d="M 102 26 L 102 62 L 145 62 L 145 42 Q 145 32 138 26 Z" fill="#C62828"/>
+      <path d="M 102 26 L 102 29 L 145 29 L 145 42 Q 145 32 138 26 Z" fill="#E53935"/>
+      <path d="M 106 32 L 106 46 L 141 46 L 141 38 Q 141 32 136 32 Z" fill="#1E3A8A"/>
+      <path d="M 106 32 L 106 36 L 141 36 L 141 38 Q 141 32 136 32 Z" fill="#3B82F6" opacity="0.5"/>
+      <rect x="101" y="38" width="3" height="6" fill="#37474F"/>
+      <rect x="143" y="50" width="3" height="4" fill="#FFF59D"/>
+      <rect x="143" y="46" width="3" height="2.5" fill="#FDD835"/>
+      <rect x="141" y="58" width="7" height="4" fill="#37474F"/>
+      <rect x="118" y="22" width="10" height="4" fill="#E53935" rx="1" class="siren"/>
+    </svg>
+  </div>
 
-  <!-- vidro -->
-  <rect x="22" y="6" width="6" height="3" fill="#4FC3F7"/>
-
-  <!-- faixa -->
-  <rect x="1" y="9" width="29" height="1" fill="#FFEB3B"/>
-
-  <!-- sirene -->
-  <rect x="23" y="2" width="4" height="2" fill="#F1C40F" class="siren"/>
-</svg>
-          </div>
-        </div>
-      </div>
+</div>
       <div class="update-indicator" id="homeUpdateStatus">Carregando…</div>
       <div id="homeOSSection">
         <div class="home-section-title">OS-BAMEX</div>
