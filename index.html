@@ -500,6 +500,17 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 .local-field-wrap input:disabled{opacity:.55;cursor:not-allowed;background:var(--surface);}
 .local-hint{font-size:10px;color:var(--text-faint);font-family:'IBM Plex Mono',monospace;letter-spacing:.03em;}
 
+/* ─── Dropdown customizado de viaturas (substitui datalist — funciona no iOS) ─── */
+.pf-dropdown-wrap{position:relative;width:100%;}
+.pf-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:60;display:none;box-shadow:0 12px 32px rgba(0,0,0,.55);}
+.pf-dropdown.open{display:block;}
+.pf-dropdown-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(48,58,71,.5);display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;transition:background .12s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.pf-dropdown-item:last-child{border-bottom:none;}
+.pf-dropdown-item:hover,.pf-dropdown-item.highlight{background:var(--surface-2);}
+.pf-dropdown-item .pf-di-prefix{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;color:var(--text);letter-spacing:.02em;}
+.pf-dropdown-item .pf-di-placa{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap;}
+.pf-dropdown-empty{padding:14px;text-align:center;color:var(--text-faint);font-size:12px;font-style:italic;}
+
 /* ─── MANUTENÇÃO PREVENTIVA ─── */
 .prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;}
 @media (max-width:600px){.prev-grid{grid-template-columns:1fr;}}
@@ -780,8 +791,10 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
             <h3>Viatura</h3>
             <div class="campo">
               <label for="pf-busca">Prefixo ou placa</label>
-              <input type="text" id="pf-busca" placeholder="Digite ABT-17 ou QKV-9675…" autocomplete="off" autocapitalize="characters" list="pf-lista">
-              <datalist id="pf-lista"></datalist>
+              <div class="pf-dropdown-wrap" id="pf-busca-wrap">
+                <input type="text" id="pf-busca" placeholder="Digite ABT ou QKV-9675…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                <div class="pf-dropdown" id="pf-dropdown"></div>
+              </div>
               <span class="dica" id="pf-busca-dica">Digite para filtrar. Selecione uma viatura para continuar.</span>
             </div>
           </div>
@@ -3319,16 +3332,7 @@ async function loadListaCompletaPreventiva(){
     var r = await apiPrev('listarTodasViaturas');
     if(!r.ok){ console.error('listarTodasViaturas:', r.error); return; }
     PREV_LISTA_COMPLETA = Array.isArray(r.viaturas) ? r.viaturas : [];
-    montarDatalistViaturas();
   }catch(e){ console.error(e); }
-}
-
-function montarDatalistViaturas(){
-  var dl = $('pf-lista'); if(!dl) return;
-  dl.innerHTML = PREV_LISTA_COMPLETA.map(function(v){
-    var label = v.prefixo + ' · ' + (v.placa || '—') + (v.locado ? ' (locada)' : '');
-    return '<option value="' + escapeAttr(v.prefixo) + '">' + escapeHtml(label) + '</option>';
-  }).join('');
 }
 
 function _fmtKmPrev(n){
@@ -3387,6 +3391,7 @@ function limparFormularioPreventiva(){
   $('pf-os').value = '';
   $('pf-error').style.display = 'none';
   $('pf-error').textContent = '';
+  fecharDropdownViaturas();
 }
 
 async function salvarPreventivaForm(){
@@ -3476,6 +3481,76 @@ async function salvarPreventivaForm(){
     resumo: resumo,
     mensagemWhats: ''
   });
+}
+
+/* ═══════ DROPDOWN CUSTOMIZADO DE VIATURAS (substitui datalist) ═══════ */
+function _normalizaBusca(s){
+  return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
+}
+
+function renderDropdownViaturas(){
+  const input = $('pf-busca');
+  const dropdown = $('pf-dropdown');
+  if(!input || !dropdown) return;
+
+  const termo = _normalizaBusca(input.value);
+  if(!termo){
+    dropdown.classList.remove('open');
+    dropdown.innerHTML = '';
+    return;
+  }
+
+  const matches = PREV_LISTA_COMPLETA.filter(v => {
+    const pfx = _normalizaBusca(v.prefixo);
+    const placa = _normalizaBusca(v.placa || '');
+    return pfx.indexOf(termo) !== -1 || placa.indexOf(termo) !== -1;
+  }).slice(0, 30);
+
+  if(matches.length === 0){
+    dropdown.innerHTML = '<div class="pf-dropdown-empty">Nenhuma viatura encontrada para "' + escapeHtml(input.value) + '"</div>';
+    dropdown.classList.add('open');
+    return;
+  }
+
+  dropdown.innerHTML = matches.map(v => {
+    const placaTxt = v.placa ? v.placa : '—';
+    const locTxt = v.locado ? ' · locada' : '';
+    return `<div class="pf-dropdown-item" data-prefixo="${escapeAttr(v.prefixo)}">
+      <span class="pf-di-prefix">${escapeHtml(v.prefixo)}${escapeHtml(locTxt)}</span>
+      <span class="pf-di-placa">${escapeHtml(placaTxt)}</span>
+    </div>`;
+  }).join('');
+  dropdown.classList.add('open');
+
+  dropdown.querySelectorAll('.pf-dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const pfx = item.dataset.prefixo;
+      input.value = pfx;
+      selecionarViaturaPreventiva(pfx);
+      fecharDropdownViaturas();
+    });
+  });
+}
+
+function fecharDropdownViaturas(){
+  const dropdown = $('pf-dropdown');
+  if(dropdown) dropdown.classList.remove('open');
+}
+
+function _handlePfBuscaInput(){
+  const input = $('pf-busca');
+  if(!input) return;
+  const val = input.value.trim().toUpperCase();
+  const exato = PREV_LISTA_COMPLETA.find(v => v.prefixo.toUpperCase() === val);
+  if(exato){
+    selecionarViaturaPreventiva(exato.prefixo);
+    fecharDropdownViaturas();
+    return;
+  }
+  PREV_VIATURA_SELECIONADA = null;
+  $('pf-info').classList.remove('show');
+  $('pf-busca-dica').textContent = 'Digite para filtrar. Selecione uma viatura para continuar.';
+  renderDropdownViaturas();
 }
 
 /* ═══════ USUÁRIOS ═══════ */
@@ -3675,16 +3750,9 @@ $('prevClearFilterBtn').addEventListener('click', () => {
   renderPreventiva();
 });
 
-$('pf-busca').addEventListener('input', (e) => {
-  var valor = e.target.value.trim().toUpperCase();
-  var exato = PREV_LISTA_COMPLETA.find(function(v){ return v.prefixo.toUpperCase() === valor; });
-  if(exato){
-    selecionarViaturaPreventiva(exato.prefixo);
-  } else {
-    PREV_VIATURA_SELECIONADA = null;
-    $('pf-info').classList.remove('show');
-    $('pf-busca-dica').textContent = 'Digite para filtrar. Selecione uma viatura para continuar.';
-  }
+$('pf-busca').addEventListener('input', debounce(_handlePfBuscaInput, 120));
+$('pf-busca').addEventListener('focus', () => {
+  if($('pf-busca').value.trim()) renderDropdownViaturas();
 });
 $('pf-km').addEventListener('input', atualizarDicaKm);
 $('pf-cancel').addEventListener('click', () => {
@@ -3692,6 +3760,12 @@ $('pf-cancel').addEventListener('click', () => {
   showPrevTab('painel');
 });
 $('pf-save').addEventListener('click', salvarPreventivaForm);
+
+document.addEventListener('click', e => {
+  const wrap = $('pf-busca-wrap');
+  if(!wrap) return;
+  if(!wrap.contains(e.target)) fecharDropdownViaturas();
+});
 
 $('manutSearch').addEventListener('input', debounce(renderManut, 180));
 $('manutClearFilterBtn').addEventListener('click', () => { MANUT_FILTRO_STATUS = 'todas'; MANUT_FILTRO_TIPO = ''; $('manutFiltroTipo').value = ''; renderManut(); });
@@ -3727,6 +3801,10 @@ $('sucessoModal').addEventListener('click', e => { if(e.target.id === 'sucessoMo
 
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
+  if($('pf-dropdown') && $('pf-dropdown').classList.contains('open')){
+    fecharDropdownViaturas();
+    return;
+  }
   ['editModal','reportModal','manutReportModal','actionModal','userModal'].forEach(id => { const el = $(id); if(el && el.style.display === 'flex') el.style.display = 'none'; });
 });
 
@@ -3747,7 +3825,10 @@ function startApp(){
   if(temPermissao('ver_os')) loadDataOS();
   if(temPermissao('ver_viaturas')) loadDataViaturas();
   if(temPermissao('ver_manutencao')) loadDataManut();
-  if(temPermissao('ver_preventiva')) loadDataPreventiva();
+  if(temPermissao('ver_preventiva')){
+    loadDataPreventiva();
+    if(temPermissao('prev_editar_km')) loadListaCompletaPreventiva();
+  }
   showView('home');
   iniciarPolling();
 }
