@@ -575,7 +575,7 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 /* ─── Comboio de viaturas (tela inicial) ─── */
 .home-fire-truck{
   position:absolute;
-  left:0; right:0; bottom:4px;
+  left:0; right:0; bottom:6px;
   height:72px;
   pointer-events:none;
   overflow:hidden;
@@ -588,13 +588,17 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   width:150px;
   height:72px;
   transform: translateX(-200px);
-  animation: truck-drive 20s linear infinite !important;
+  animation-name: truck-drive !important;
+  animation-duration: 20s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+  animation-fill-mode: both !important;
   will-change: transform;
 }
-.home-fire-truck .truck-body:nth-child(1){ animation-delay: 0s; }
-.home-fire-truck .truck-body:nth-child(2){ animation-delay: 5s; }
-.home-fire-truck .truck-body:nth-child(3){ animation-delay: 10s; }
-.home-fire-truck .truck-body:nth-child(4){ animation-delay: 15s; }
+.home-fire-truck .truck-body:nth-child(1){ animation-delay: 0s    !important; }
+.home-fire-truck .truck-body:nth-child(2){ animation-delay: -5s   !important; }
+.home-fire-truck .truck-body:nth-child(3){ animation-delay: -10s  !important; }
+.home-fire-truck .truck-body:nth-child(4){ animation-delay: -15s  !important; }
 .home-fire-truck svg{
   width:100%;
   height:100%;
@@ -607,47 +611,23 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 .home-fire-truck .wheel{
   transform-box: fill-box;
   transform-origin: center;
-  animation: truck-wheel 1.2s linear infinite !important;
+  animation-name: truck-wheel !important;
+  animation-duration: 1.2s !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
 }
 @keyframes truck-wheel{
   to{ transform: rotate(360deg); }
 }
 .home-fire-truck .siren{
-  animation: siren-flash 0.8s ease-in-out infinite !important;
+  animation-name: siren-flash !important;
+  animation-duration: 0.8s !important;
+  animation-timing-function: ease-in-out !important;
+  animation-iteration-count: infinite !important;
 }
 @keyframes siren-flash{
   0%, 100%{ opacity: 1; }
   50%     { opacity: 0.35; }
-}
-.home-fire-truck .wheel{
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: truck-wheel 0.6s steps(4) infinite !important;
-}
-@keyframes truck-wheel{
-  to{ transform: rotate(360deg); }
-}
-.home-fire-truck .siren{
-  animation: siren-flash 0.6s steps(2) infinite !important;
-}
-@keyframes siren-flash{
-  0%, 100%{ fill: #F1C40F; }
-  50%     { fill: #E74C3C; }
-}
-.home-fire-truck .wheel{
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: truck-wheel 0.6s steps(4) infinite;
-}
-@keyframes truck-wheel{
-  to{ transform: rotate(360deg); }
-}
-.home-fire-truck .siren{
-  animation: siren-flash 0.6s steps(2) infinite;
-}
-@keyframes siren-flash{
-  0%, 100%{ fill: #F1C40F; }
-  50%     { fill: #E74C3C; }
 }
 @media (prefers-reduced-motion: reduce){
   .home-fire-truck .truck-body,
