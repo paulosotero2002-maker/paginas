@@ -191,7 +191,7 @@ input[type=datetime-local]:focus, input[type=date]:focus{outline:1px solid var(-
 .perm-check.checked{border-color:var(--amber);color:var(--text);background:rgba(232,169,58,.08);}
 .perm-check input{accent-color:var(--amber);margin:0;flex:none;width:16px;height:16px;}
 .perm-check .perm-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.home-welcome{background:linear-gradient(135deg,var(--bg-elev),var(--surface));border:1px solid var(--border);border-radius:14px;padding:24px 26px 84px;position:relative;overflow:hidden;margin-bottom:20px;}
+.home-welcome{background:linear-gradient(135deg,var(--bg-elev),var(--surface));border:1px solid var(--border);border-radius:14px;padding:20px 26px 18px;position:relative;overflow:hidden;margin-bottom:20px;}
 .home-welcome::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);z-index:1;}
 .home-welcome h2{font-family:'Rajdhani',sans-serif;font-size:24px;margin:0 0 4px;position:relative;z-index:1;}
 .home-welcome p{margin:0;font-size:13px;color:var(--text-dim);position:relative;z-index:1;}
@@ -574,8 +574,8 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 
 /* ─── Comboio de viaturas (tela inicial) ─── */
 .home-fire-truck{
-  position:absolute;
-  left:0; right:0; bottom:6px;
+  position:relative;
+  margin-top:14px;
   height:72px;
   pointer-events:none;
   overflow:hidden;
