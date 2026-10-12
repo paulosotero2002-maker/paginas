@@ -191,10 +191,10 @@ input[type=datetime-local]:focus, input[type=date]:focus{outline:1px solid var(-
 .perm-check.checked{border-color:var(--amber);color:var(--text);background:rgba(232,169,58,.08);}
 .perm-check input{accent-color:var(--amber);margin:0;flex:none;width:16px;height:16px;}
 .perm-check .perm-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.home-welcome{background:linear-gradient(135deg,var(--bg-elev),var(--surface));border:1px solid var(--border);border-radius:14px;padding:24px 26px;position:relative;overflow:hidden;margin-bottom:20px;}
-.home-welcome::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);}
-.home-welcome h2{font-family:'Rajdhani',sans-serif;font-size:24px;margin:0 0 4px;}
-.home-welcome p{margin:0;font-size:13px;color:var(--text-dim);}
+.home-welcome{background:linear-gradient(135deg,var(--bg-elev),var(--surface));border:1px solid var(--border);border-radius:14px;padding:24px 26px 66px;position:relative;overflow:hidden;margin-bottom:20px;}
+.home-welcome::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--amber);z-index:1;}
+.home-welcome h2{font-family:'Rajdhani',sans-serif;font-size:24px;margin:0 0 4px;position:relative;z-index:1;}
+.home-welcome p{margin:0;font-size:13px;color:var(--text-dim);position:relative;z-index:1;}
 .home-section-title{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;margin:22px 0 10px;}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;}
 .home-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s, background .15s, transform .12s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-touch-callout:none;}
@@ -572,6 +572,70 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
 .prev-form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);flex-wrap:wrap;}
 .prev-form-actions .btn{padding:10px 18px;font-size:14px;}
 
+/* ─── Caminhão de bombeiro decorativo (tela inicial) ─── */
+.home-fire-truck{
+  position:absolute;
+  left:0; right:0; bottom:4px;
+  height:52px;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:0;
+}
+.home-fire-truck .truck-body{
+  position:absolute;
+  bottom:0;
+  left:-120px;
+  width:110px;
+  height:48px;
+  animation: truck-drive 16s linear infinite;
+}
+.home-fire-truck svg{
+  width:100%;
+  height:100%;
+  display:block;
+  animation: truck-bob 0.5s ease-in-out infinite;
+}
+@keyframes truck-drive{
+  from{ left:-120px; }
+  to  { left:100%; }
+}
+@keyframes truck-bob{
+  0%, 100%{ transform: translateY(0); }
+  50%     { transform: translateY(-1.5px); }
+}
+.home-fire-truck .wheel{
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: truck-wheel 0.5s linear infinite;
+}
+@keyframes truck-wheel{
+  to{ transform: rotate(360deg); }
+}
+.home-fire-truck .siren{
+  animation: siren-flash 0.8s ease-in-out infinite;
+}
+.home-fire-truck .siren-glow{
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: siren-glow 0.8s ease-in-out infinite;
+}
+@keyframes siren-flash{
+  0%, 100%{ fill: #E8A93A; }
+  50%     { fill: #FFEB3B; }
+}
+@keyframes siren-glow{
+  0%, 100%{ opacity: 0;   transform: scale(0.8); }
+  50%     { opacity: 0.6; transform: scale(1.4); }
+}
+@media (prefers-reduced-motion: reduce){
+  .home-fire-truck .truck-body,
+  .home-fire-truck .wheel,
+  .home-fire-truck .siren,
+  .home-fire-truck .siren-glow{ animation: none; }
+  .home-fire-truck .truck-body{ left:24px; }
+  .home-fire-truck .siren-glow{ opacity: 0.4; }
+}
+
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
 @media print{
   body{background:#fff;color:#000;}
@@ -671,7 +735,48 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   <main class="main">
 
     <section class="view is-active" id="view-home">
-      <div class="home-welcome"><h2>Bem-vindo, <span id="homeUserName">—</span></h2><p>Resumo em tempo real dos painéis.</p></div>
+      <div class="home-welcome">
+        <h2>Bem-vindo, <span id="homeUserName">—</span></h2>
+        <p>Resumo em tempo real dos painéis.</p>
+        <div class="home-fire-truck" aria-hidden="true">
+          <div class="truck-body">
+            <svg viewBox="0 0 140 60" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="70" cy="57" rx="58" ry="2.2" fill="rgba(0,0,0,.4)"/>
+
+              <g class="wheel">
+                <circle cx="30" cy="48" r="7" fill="#1A1A1A"/>
+                <circle cx="30" cy="48" r="3.4" fill="#546E7A"/>
+                <line x1="30" y1="41" x2="30" y2="55" stroke="#37474F" stroke-width="1.4"/>
+                <line x1="23" y1="48" x2="37" y2="48" stroke="#37474F" stroke-width="1.4"/>
+              </g>
+              <g class="wheel">
+                <circle cx="110" cy="48" r="7" fill="#1A1A1A"/>
+                <circle cx="110" cy="48" r="3.4" fill="#546E7A"/>
+                <line x1="110" y1="41" x2="110" y2="55" stroke="#37474F" stroke-width="1.4"/>
+                <line x1="103" y1="48" x2="117" y2="48" stroke="#37474F" stroke-width="1.4"/>
+              </g>
+
+              <rect x="14" y="14" width="68" height="3.5" rx="1" fill="#B0BEC5"/>
+              <line x1="22" y1="14" x2="22" y2="17.5" stroke="#607D8B" stroke-width="1"/>
+              <line x1="32" y1="14" x2="32" y2="17.5" stroke="#607D8B" stroke-width="1"/>
+              <line x1="42" y1="14" x2="42" y2="17.5" stroke="#607D8B" stroke-width="1"/>
+              <line x1="52" y1="14" x2="52" y2="17.5" stroke="#607D8B" stroke-width="1"/>
+              <line x1="62" y1="14" x2="62" y2="17.5" stroke="#607D8B" stroke-width="1"/>
+              <line x1="72" y1="14" x2="72" y2="17.5" stroke="#607D8B" stroke-width="1"/>
+
+              <rect x="8" y="20" width="82" height="24" rx="2" fill="#C62828"/>
+              <path d="M 90 20 L 90 44 L 130 44 L 130 28 Q 130 20 122 20 Z" fill="#C62828"/>
+
+              <path d="M 94 24 L 94 34 L 119 34 L 119 24 Z" fill="#7FCAFF" opacity=".85"/>
+              <rect x="8" y="33" width="122" height="3" fill="#FFC107"/>
+              <rect x="125" y="38" width="3" height="5" fill="#333"/>
+
+              <circle class="siren-glow" cx="112" cy="17" r="5" fill="#E8A93A"/>
+              <circle class="siren" cx="112" cy="17" r="2.5" fill="#E8A93A"/>
+            </svg>
+          </div>
+        </div>
+      </div>
       <div class="update-indicator" id="homeUpdateStatus">Carregando…</div>
       <div id="homeOSSection">
         <div class="home-section-title">OS-BAMEX</div>
