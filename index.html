@@ -587,8 +587,8 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   left:0;
   width:144px;
   height:72px;
-  transform: translateX(-150px);
-  animation: truck-drive 20s linear infinite;
+  transform: translateX(-200px);
+  animation: truck-drive 15s linear infinite !important;
   will-change: transform;
 }
 .home-fire-truck svg{
@@ -597,15 +597,30 @@ footer.page-footer{text-align:center;color:var(--text-faint);font-size:11px;marg
   display:block;
   shape-rendering: crispEdges;
   image-rendering: pixelated;
-  animation: truck-bob 0.45s steps(2) infinite;
+  animation: truck-bob 0.45s steps(2) infinite !important;
 }
 @keyframes truck-drive{
-  0%   { transform: translateX(-150px); }
-  100% { transform: translateX(calc(100vw + 30px)); }
+  0%   { transform: translateX(-200px); }
+  100% { transform: translateX(2500px); }
 }
 @keyframes truck-bob{
   0%, 100%{ transform: translateY(0); }
   50%     { transform: translateY(-2px); }
+}
+.home-fire-truck .wheel{
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: truck-wheel 0.6s steps(4) infinite !important;
+}
+@keyframes truck-wheel{
+  to{ transform: rotate(360deg); }
+}
+.home-fire-truck .siren{
+  animation: siren-flash 0.6s steps(2) infinite !important;
+}
+@keyframes siren-flash{
+  0%, 100%{ fill: #F1C40F; }
+  50%     { fill: #E74C3C; }
 }
 .home-fire-truck .wheel{
   transform-box: fill-box;
